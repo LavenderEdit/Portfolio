@@ -1,0 +1,67 @@
+/* 
+    Created on : Oct 7, 2025, 12:20:11 PM
+    Author     : Joan Lavender
+*/
+:root {
+    --fg:#e6e6e6;
+    --bg:#0d1117;
+    --card:#161b22;
+}
+*{
+    box-sizing:border-box
+}
+body{
+    margin:0;
+    font-family:system-ui;
+    background:var(--bg);
+    color:var(--fg)
+}
+.hero{
+    padding:48px 16px;
+    text-align:center
+}
+.cards{
+    display:grid;
+    gap:16px;
+    grid-template-columns:repeat(auto-fill,minmax(280px,1fr))
+}
+.card{
+    background:var(--card);
+    padding:16px;
+    border-radius:14px
+}
+.tags span{
+    display:inline-block;
+    padding:2px 8px;
+    border:1px solid #333;
+    border-radius:999px;
+    margin:2px
+}
+input,textarea,button{
+    width:100%;
+    padding:12px;
+    margin:6px 0;
+    border-radius:10px;
+    border:1px solid #333;
+    background:#0b0f14;
+    color:#e6e6e6
+}
+button{
+    cursor:pointer
+}
+.error{
+    color:#ff6b6b;
+    font-size:.85rem
+}
+.alert.success{
+    background:#163b2f;
+    color:#a3f7c0;
+    padding:10px;
+    border-radius:8px
+}
+.avatar{
+    width:112px;
+    height:112px;
+    border-radius:50%;
+    border:2px solid #333
+}

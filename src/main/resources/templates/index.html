@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <th:block th:replace="fragments/_layout :: content">
+        <section class="hero">
+            <img th:if="${profile?.avatarUrl}" th:src="${profile.avatarUrl}" alt="avatar" class="avatar">
+            <h1 th:text="${profile?.fullName}">Juan Lavender</h1>
+            <p class="headline" th:text="${profile?.headline}">Software Development Student</p>
+            <p class="bio" th:utext="${#strings.escapeXml(profile?.bio)}"></p>
+            <div class="socials">
+                <a th:each="s : ${socials}" th:href="${s.url}" th:text="${s.platform}">link</a>
+            </div>
+        </section>
+
+        <section id="skills">
+            <h2>Tech Stack</h2>
+            <div th:each="cat : ${categories}">
+                <h3 th:text="${cat.name}">Category</h3>
+                <ul>
+                    <li th:each="sk : ${#lists.select(skills, s -> s.category.id == cat.id)}"
+                        th:text="${sk.name}">Skill</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="projects">
+            <h2>Proyectos</h2>
+            <div class="cards">
+                <article class="card" th:each="p : ${projects}">
+                    <img th:if="${p.coverImage}" th:src="${p.coverImage}" th:alt="${p.title}">
+                    <h3><a th:href="@{|/projects/${p.slug}|}" th:text="${p.title}">Title</a></h3>
+                    <p th:text="${p.summary}">Summary</p>
+                    <div class="tags">
+                        <span th:each="sk : ${p.skills}" th:text="${sk.name}">Tech</span>
+                    </div>
+                    <div class="links">
+                        <a th:if="${p.repoUrl}" th:href="${p.repoUrl}">Repo</a>
+                        <a th:if="${p.liveUrl}" th:href="${p.liveUrl}">Demo</a>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section id="experience">
+            <h2>Experiencia</h2>
+            <div th:each="e : ${experiences}">
+                <h3><span th:text="${e.role}">Role</span> · <span th:text="${e.company}">Company</span></h3>
+                <p><small th:text="${#temporals.format(e.startDate, 'MMM yyyy')}">Start</small>
+                    —
+                    <small th:text="${e.current} ? 'Actualidad' : ${#temporals.format(e.endDate, 'MMM yyyy')}">End</small></p>
+                <p th:text="${e.description}">desc</p>
+            </div>
+        </section>
+
+        <section id="education">
+            <h2>Educación</h2>
+            <div th:each="ed : ${education}">
+                <h3 th:text="${ed.institution}">Inst</h3>
+                <p th:text="${ed.degree}">Degree</p>
+            </div>
+        </section>
+
+        <section id="contact">
+            <h2>Contacto</h2>
+            <div th:if="${contactSuccess}" class="alert success">¡Mensaje enviado!</div>
+            <form th:action="@{/contact}" method="post" th:object="${contactForm}">
+                <input type="text" th:field="*{name}" placeholder="Nombre">
+                <div class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">name err</div>
+                <input type="email" th:field="*{email}" placeholder="Email">
+                <div class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">email err</div>
+                <textarea th:field="*{message}" placeholder="Tu mensaje"></textarea>
+                <div class="error" th:if="${#fields.hasErrors('message')}" th:errors="*{message}">msg err</div>
+                <button type="submit">Enviar</button>
+            </form>
+        </section>
+    </th:block>
+</html>

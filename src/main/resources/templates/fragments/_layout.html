@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <title th:text="${title} ?: 'Lavender | Portfolio'">Lavender | Portfolio</title>
+        <link rel="stylesheet" th:href="@{/css/site.css}">
+    </head>
+    <body>
+        <header th:replace="fragments/_navbar :: navbar"></header>
+        <main>
+            <div th:fragment="content"><!-- page content --></div>
+        </main>
+        <footer th:replace="fragments/_footer :: footer"></footer>
+        <script th:src="@{/js/site.js}"></script>
+    </body>
+</html>
