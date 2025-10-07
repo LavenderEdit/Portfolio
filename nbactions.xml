@@ -59,4 +59,21 @@
             <exec.appArgs></exec.appArgs>
         </properties>
     </action>
+    <action>
+        <actionName>rebuild</actionName>
+        <packagings>
+            <packaging>*</packaging>
+        </packagings>
+        <goals>
+            <goal>clean</goal>
+            <goal>install</goal>
+        </goals>
+        <properties>
+            <Env.MYSQL_HOST>localhost</Env.MYSQL_HOST>
+            <Env.MYSQL_PORT>3306</Env.MYSQL_PORT>
+            <Env.MYSQL_DATABASE>portafolio</Env.MYSQL_DATABASE>
+            <Env.MYSQL_USER>root</Env.MYSQL_USER>
+            <Env.MYSQL_PASSWORD>Lavendernara_1</Env.MYSQL_PASSWORD>
+        </properties>
+    </action>
 </actions>
