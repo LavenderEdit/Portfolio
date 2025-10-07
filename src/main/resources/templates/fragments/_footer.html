@@ -1,11 +1,13 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body>
-        <div>TODO write content</div>
-    </body>
-</html>
+<footer class="footer" th:fragment="footer">
+    <div class="footer-inner">
+        <p>
+            <span th:text="${profile != null} ? profile.fullName : 'Portfolio Hub'">Portfolio Hub</span>
+            · <span th:text="${#temporals.format(#temporals.createNow(), 'yyyy')}">2024</span>
+        </p>
+        <p class="footer-links">
+            <a href="https://spring.io/" target="_blank" rel="noopener">Spring Boot</a>
+            <span>·</span>
+            <a href="https://www.thymeleaf.org/" target="_blank" rel="noopener">Thymeleaf</a>
+        </p>
+    </div>
+</footer>

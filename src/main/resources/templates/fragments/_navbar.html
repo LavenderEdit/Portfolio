@@ -1,11 +1,24 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body>
-        <div>TODO write content</div>
-    </body>
-</html>
+<nav class="navbar" th:fragment="navbar">
+    <div class="nav-inner">
+        <a class="brand" th:href="@{/}">
+            <span class="brand-mark">&lt;/&gt;</span>
+            <span>Portfolio Hub</span>
+        </a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" data-nav-toggle>
+            <span class="sr-only">Abrir menú</span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div class="nav-links" id="nav-menu" data-nav-menu>
+            <a class="nav-link" th:if="${profile == null}" th:href="@{/}">Inicio</a>
+            <a class="nav-link" th:if="${profile != null}" th:href="@{|/portfolio/${profile.slug}|}">Inicio</a>
+            <a class="nav-link" th:if="${profile != null}" th:href="@{|/portfolio/${profile.slug}#about|}">Sobre mí</a>
+            <a class="nav-link" th:if="${profile != null}" th:href="@{|/portfolio/${profile.slug}#skills|}">Habilidades</a>
+            <a class="nav-link" th:if="${profile != null}" th:href="@{|/portfolio/${profile.slug}#projects|}">Proyectos</a>
+            <a class="nav-link" th:if="${profile != null}" th:href="@{|/portfolio/${profile.slug}#experience|}">Experiencia</a>
+            <a class="nav-link" th:if="${profile != null}" th:href="@{|/portfolio/${profile.slug}#education|}">Educación</a>
+            <a class="nav-link highlight" th:if="${profile != null}" th:href="@{|/portfolio/${profile.slug}#contact|}">Contacto</a>
+        </div>
+    </div>
+</nav>

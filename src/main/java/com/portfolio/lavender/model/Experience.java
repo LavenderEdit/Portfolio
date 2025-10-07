@@ -2,9 +2,11 @@ package com.portfolio.lavender.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,11 +24,14 @@ public class Experience {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Profile profile;
     @Column(nullable = false)
     private String company;
     @Column(nullable = false)
     private String role;
     private String location;
+    @Column(nullable = false)
     private java.time.LocalDate startDate;
     private java.time.LocalDate endDate;
     private boolean current;

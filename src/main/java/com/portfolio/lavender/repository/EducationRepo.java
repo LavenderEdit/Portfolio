@@ -10,5 +10,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface EducationRepo extends JpaRepository<Education, Long> {
 
-    List<Education> findAllByOrderByStartDateDesc();
+    List<Education> findAllByProfileSlugOrderByStartDateDesc(String slug);
 }

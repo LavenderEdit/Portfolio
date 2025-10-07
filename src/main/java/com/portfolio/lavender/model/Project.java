@@ -2,6 +2,7 @@ package com.portfolio.lavender.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -9,7 +10,12 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,12 +28,16 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(indexes = @Index(name = "uk_project_slug", columnList = "slug", unique = true))
+@Table(indexes = {
+    @Index(name = "idx_project_featured", columnList = "profile_id, featured, sort_order")
+}, uniqueConstraints = @UniqueConstraint(name = "uk_project_profile_slug", columnNames = {"profile_id", "slug"}))
 public class Project {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Profile profile;
     @Column(nullable = false, length = 140)
     private String title;
     @Column(nullable = false, length = 160)
@@ -48,6 +58,7 @@ public class Project {
     @JoinTable(name = "project_skill",
             joinColumns = @JoinColumn(name = "project_id"),
             inverseJoinColumns = @JoinColumn(name = "skill_id"))
-    private java.util.Set<Skill> skills = new java.util.HashSet<>();
+    @OrderBy("sortOrder ASC, name ASC")
+    private Set<Skill> skills = new LinkedHashSet<>();
 
 }

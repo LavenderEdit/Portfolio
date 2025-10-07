@@ -3,15 +3,20 @@ package com.portfolio.lavender.repository;
 import com.portfolio.lavender.model.Project;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author Joan Lavender
  */
+@Repository
 public interface ProjectRepo extends JpaRepository<Project, Long> {
 
-    Optional<Project> findBySlug(String slug);
+    @EntityGraph(attributePaths = "skills")
+    Optional<Project> findByProfileSlugAndSlug(String profileSlug, String slug);
 
-    List<Project> findAllByOrderByFeaturedDescSortOrderAsc();
+    @EntityGraph(attributePaths = "skills")
+    List<Project> findAllByProfileSlugOrderByFeaturedDescSortOrderAsc(String profileSlug);
 }

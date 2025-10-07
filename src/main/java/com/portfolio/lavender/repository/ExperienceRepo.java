@@ -10,5 +10,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface ExperienceRepo extends JpaRepository<Experience, Long> {
 
-    List<Experience> findAllByOrderByStartDateDesc();
+    List<Experience> findAllByProfileSlugOrderByStartDateDesc(String slug);
 }
