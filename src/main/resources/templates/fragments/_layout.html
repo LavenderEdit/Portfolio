@@ -13,6 +13,6 @@
             <div th:fragment="content"><!-- page content --></div>
         </main>
         <footer th:replace="fragments/_footer :: footer"></footer>
-        <script th:src="@{/js/site.js}" defer></script>
+        <script th:src="@{/js/site.js}" th:attr="nonce=${cspNonce}" defer></script>
     </body>
 </html>

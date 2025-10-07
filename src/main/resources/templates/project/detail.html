@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-    <th:block th:replace="fragments/_layout :: content">
+    <th:block th:replace="~{fragments/_layout :: content}">
         <article class="section project-detail">
             <div class="breadcrumbs">
                 <a th:href="@{|/portfolio/${profile.slug}|}">&larr; Volver al portafolio</a>
