@@ -1,137 +1,139 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-    <th:block th:replace="~{fragments/_layout :: content}">
-        <section class="hero" id="about">
-            <div class="hero-card">
-                <div class="hero-media">
-                    <img th:if="${profile?.avatarUrl}" th:src="${profile.avatarUrl}" alt="Avatar" class="avatar">
-                    <div class="avatar placeholder" th:if="${profile?.avatarUrl == null}">
-                        <span th:text="${profile?.fullName?.substring(0,1)}">P</span>
-                    </div>
-                </div>
-                <div class="hero-copy">
-                    <p class="eyebrow">Hola, soy</p>
-                    <h1 th:text="${profile?.fullName}">Juan Lavender</h1>
-                    <p class="headline" th:text="${profile?.headline}">Software Development Student</p>
-                    <p class="bio" th:utext="${#strings.escapeXml(profile?.bio)}"></p>
-                    <div class="socials" th:if="${#lists.isEmpty(socials) == false}">
-                        <a class="social-pill" th:each="s : ${socials}" th:href="${s.url}" target="_blank" rel="noopener" th:text="${s.platform}">GitHub</a>
-                    </div>
-                    <div class="hero-actions">
-                        <a class="btn primary" th:if="${profile?.resumeUrl}" th:href="${profile.resumeUrl}" target="_blank" rel="noopener">Descargar CV</a>
-                        <a class="btn" href="#contact">Escríbeme</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="section" id="skills" th:if="${#lists.isEmpty(categories) == false}">
-            <div class="section-heading">
-                <h2>Stack &amp; Habilidades</h2>
-                <p>Un resumen de las herramientas con las que construyo productos digitales.</p>
-            </div>
-            <div class="grid skills">
-                <div class="skill-card" th:each="cat : ${categories}">
-                    <h3 th:text="${cat.name}">Backend</h3>
-                    <ul class="skill-tags" th:if="${#lists.isEmpty(cat.skills) == false}">
-                        <li th:each="sk : ${cat.skills}" th:text="${sk.name}">Java</li>
-                    </ul>
-                    <p class="empty" th:if="${#lists.isEmpty(cat.skills)}">Próximamente…</p>
-                </div>
-            </div>
-        </section>
-
-        <section class="section" id="projects" th:if="${#lists.isEmpty(projects) == false}">
-            <div class="section-heading">
-                <h2>Proyectos Destacados</h2>
-                <p>Casos reales y experimentos que muestran mi proceso end-to-end.</p>
-            </div>
-            <div class="grid projects">
-                <article class="project-card" th:each="p : ${projects}">
-                    <div class="project-media" th:if="${p.coverImage}">
-                        <img th:src="${p.coverImage}" th:alt="${p.title}">
-                    </div>
-                    <div class="project-body">
-                        <p class="project-meta" th:text="${p.startDate != null ? #temporals.format(p.startDate, 'yyyy') : 'Proyecto'}">2024</p>
-                        <h3><a th:href="@{|/portfolio/${profile.slug}/projects/${p.slug}|}" th:text="${p.title}">Proyecto</a></h3>
-                        <p th:text="${p.summary}">Resumen breve del proyecto.</p>
-                        <div class="tags" th:if="${#lists.isEmpty(p.skills) == false}">
-                            <span th:each="sk : ${p.skills}" th:text="${sk.name}">Tech</span>
-                        </div>
-                        <div class="links">
-                            <a th:if="${p.repoUrl}" th:href="${p.repoUrl}" target="_blank" rel="noopener">Repositorio</a>
-                            <a th:if="${p.liveUrl}" th:href="${p.liveUrl}" target="_blank" rel="noopener">Demo</a>
+    <th:block th:replace="~{fragments/_layout :: layout(~{::pageContent})}">
+        <th:block th:fragment="pageContent">
+            <section class="hero" id="about">
+                <div class="hero-card">
+                    <div class="hero-media">
+                        <img th:if="${profile?.avatarUrl}" th:src="${profile.avatarUrl}" alt="Avatar" class="avatar">
+                        <div class="avatar placeholder" th:if="${profile?.avatarUrl == null}">
+                            <span th:text="${profile?.fullName?.substring(0,1)}">P</span>
                         </div>
                     </div>
-                </article>
-            </div>
-        </section>
-
-        <section class="section" id="experience" th:if="${#lists.isEmpty(experiences) == false}">
-            <div class="section-heading">
-                <h2>Experiencia</h2>
-                <p>Roles donde he generado impacto.</p>
-            </div>
-            <div class="timeline">
-                <article class="timeline-item" th:each="e : ${experiences}">
-                    <h3>
-                        <span th:text="${e.role}">Rol</span>
-                        <small>·</small>
-                        <span th:text="${e.company}">Empresa</span>
-                    </h3>
-                    <p class="timeline-date">
-                        <span th:text="${#temporals.format(e.startDate, 'MMM yyyy')}">Ene 2022</span>
-                        <span>—</span>
-                        <span th:text="${e.current} ? 'Actualidad' : (e.endDate != null ? #temporals.format(e.endDate, 'MMM yyyy') : 'Actualidad')">Actualidad</span>
-                    </p>
-                    <p th:text="${e.description}">Descripción del rol.</p>
-                </article>
-            </div>
-        </section>
-
-        <section class="section" id="education" th:if="${#lists.isEmpty(education) == false}">
-            <div class="section-heading">
-                <h2>Educación</h2>
-                <p>Programas académicos y certificaciones.</p>
-            </div>
-            <div class="timeline">
-                <article class="timeline-item" th:each="ed : ${education}">
-                    <h3 th:text="${ed.institution}">Institución</h3>
-                    <p class="timeline-date">
-                        <span th:text="${#temporals.format(ed.startDate, 'yyyy')}">2022</span>
-                        <span>—</span>
-                        <span th:text="${ed.endDate != null ? #temporals.format(ed.endDate, 'yyyy') : 'Actualidad'}">Actualidad</span>
-                    </p>
-                    <p th:text="${ed.degree}">Grado</p>
-                    <p th:if="${ed.field}" th:text="${ed.field}">Campo</p>
-                </article>
-            </div>
-        </section>
-
-        <section class="section contact" id="contact">
-            <div class="section-heading">
-                <h2>Trabajemos juntos</h2>
-                <p>Cuéntame sobre tu idea o proyecto, responderé a la brevedad.</p>
-            </div>
-            <div th:if="${contactSuccess}" class="alert success">¡Gracias! Tu mensaje fue enviado correctamente.</div>
-            <form class="contact-form" th:action="@{|/portfolio/${profile.slug}/contact|}" method="post" th:object="${contactForm}">
-                <div class="field">
-                    <label for="name">Nombre</label>
-                    <input id="name" type="text" th:field="*{name}" placeholder="¿Cómo te llamas?">
-                    <div class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Nombre requerido</div>
+                    <div class="hero-copy">
+                        <p class="eyebrow">Hola, soy</p>
+                        <h1 th:text="${profile?.fullName}">Juan Lavender</h1>
+                        <p class="headline" th:text="${profile?.headline}">Software Development Student</p>
+                        <p class="bio" th:utext="${#strings.escapeXml(profile?.bio)}"></p>
+                        <div class="socials" th:if="${#lists.isEmpty(socials) == false}">
+                            <a class="social-pill" th:each="s : ${socials}" th:href="${s.url}" target="_blank" rel="noopener" th:text="${s.platform}">GitHub</a>
+                        </div>
+                        <div class="hero-actions">
+                            <a class="btn primary" th:if="${profile?.resumeUrl}" th:href="${profile.resumeUrl}" target="_blank" rel="noopener">Descargar CV</a>
+                            <a class="btn" href="#contact">Escríbeme</a>
+                        </div>
+                    </div>
                 </div>
-                <div class="field">
-                    <label for="email">Correo</label>
-                    <input id="email" type="email" th:field="*{email}" placeholder="nombre@empresa.com">
-                    <div class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Correo inválido</div>
+            </section>
+
+            <section class="section" id="skills" th:if="${#lists.isEmpty(categories) == false}">
+                <div class="section-heading">
+                    <h2>Stack &amp; Habilidades</h2>
+                    <p>Un resumen de las herramientas con las que construyo productos digitales.</p>
                 </div>
-                <div class="field">
-                    <label for="message">Mensaje</label>
-                    <textarea id="message" rows="4" th:field="*{message}" placeholder="Describe tu proyecto o pregunta"></textarea>
-                    <div class="error" th:if="${#fields.hasErrors('message')}" th:errors="*{message}">Mensaje requerido</div>
+                <div class="grid skills">
+                    <div class="skill-card" th:each="cat : ${categories}">
+                        <h3 th:text="${cat.name}">Backend</h3>
+                        <ul class="skill-tags" th:if="${#lists.isEmpty(cat.skills) == false}">
+                            <li th:each="sk : ${cat.skills}" th:text="${sk.name}">Java</li>
+                        </ul>
+                        <p class="empty" th:if="${#lists.isEmpty(cat.skills)}">Próximamente…</p>
+                    </div>
                 </div>
-                <button type="submit" class="btn primary">Enviar mensaje</button>
-            </form>
-        </section>
+            </section>
+
+            <section class="section" id="projects" th:if="${#lists.isEmpty(projects) == false}">
+                <div class="section-heading">
+                    <h2>Proyectos Destacados</h2>
+                    <p>Casos reales y experimentos que muestran mi proceso end-to-end.</p>
+                </div>
+                <div class="grid projects">
+                    <article class="project-card" th:each="p : ${projects}">
+                        <div class="project-media" th:if="${p.coverImage}">
+                            <img th:src="${p.coverImage}" th:alt="${p.title}">
+                        </div>
+                        <div class="project-body">
+                            <p class="project-meta" th:text="${p.startDate != null ? #temporals.format(p.startDate, 'yyyy') : 'Proyecto'}">2024</p>
+                            <h3><a th:href="@{|/portfolio/${profile.slug}/projects/${p.slug}|}" th:text="${p.title}">Proyecto</a></h3>
+                            <p th:text="${p.summary}">Resumen breve del proyecto.</p>
+                            <div class="tags" th:if="${#lists.isEmpty(p.skills) == false}">
+                                <span th:each="sk : ${p.skills}" th:text="${sk.name}">Tech</span>
+                            </div>
+                            <div class="links">
+                                <a th:if="${p.repoUrl}" th:href="${p.repoUrl}" target="_blank" rel="noopener">Repositorio</a>
+                                <a th:if="${p.liveUrl}" th:href="${p.liveUrl}" target="_blank" rel="noopener">Demo</a>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <section class="section" id="experience" th:if="${#lists.isEmpty(experiences) == false}">
+                <div class="section-heading">
+                    <h2>Experiencia</h2>
+                    <p>Roles donde he generado impacto.</p>
+                </div>
+                <div class="timeline">
+                    <article class="timeline-item" th:each="e : ${experiences}">
+                        <h3>
+                            <span th:text="${e.role}">Rol</span>
+                            <small>·</small>
+                            <span th:text="${e.company}">Empresa</span>
+                        </h3>
+                        <p class="timeline-date">
+                            <span th:text="${#temporals.format(e.startDate, 'MMM yyyy')}">Ene 2022</span>
+                            <span>—</span>
+                            <span th:text="${e.current} ? 'Actualidad' : (e.endDate != null ? #temporals.format(e.endDate, 'MMM yyyy') : 'Actualidad')">Actualidad</span>
+                        </p>
+                        <p th:text="${e.description}">Descripción del rol.</p>
+                    </article>
+                </div>
+            </section>
+
+            <section class="section" id="education" th:if="${#lists.isEmpty(education) == false}">
+                <div class="section-heading">
+                    <h2>Educación</h2>
+                    <p>Programas académicos y certificaciones.</p>
+                </div>
+                <div class="timeline">
+                    <article class="timeline-item" th:each="ed : ${education}">
+                        <h3 th:text="${ed.institution}">Institución</h3>
+                        <p class="timeline-date">
+                            <span th:text="${#temporals.format(ed.startDate, 'yyyy')}">2022</span>
+                            <span>—</span>
+                            <span th:text="${ed.endDate != null ? #temporals.format(ed.endDate, 'yyyy') : 'Actualidad'}">Actualidad</span>
+                        </p>
+                        <p th:text="${ed.degree}">Grado</p>
+                        <p th:if="${ed.field}" th:text="${ed.field}">Campo</p>
+                    </article>
+                </div>
+            </section>
+
+            <section class="section contact" id="contact">
+                <div class="section-heading">
+                    <h2>Trabajemos juntos</h2>
+                    <p>Cuéntame sobre tu idea o proyecto, responderé a la brevedad.</p>
+                </div>
+                <div th:if="${contactSuccess}" class="alert success">¡Gracias! Tu mensaje fue enviado correctamente.</div>
+                <form class="contact-form" th:action="@{|/portfolio/${profile.slug}/contact|}" method="post" th:object="${contactForm}">
+                    <div class="field">
+                        <label for="name">Nombre</label>
+                        <input id="name" type="text" th:field="*{name}" placeholder="¿Cómo te llamas?">
+                        <div class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Nombre requerido</div>
+                    </div>
+                    <div class="field">
+                        <label for="email">Correo</label>
+                        <input id="email" type="email" th:field="*{email}" placeholder="nombre@empresa.com">
+                        <div class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Correo inválido</div>
+                    </div>
+                    <div class="field">
+                        <label for="message">Mensaje</label>
+                        <textarea id="message" rows="4" th:field="*{message}" placeholder="Describe tu proyecto o pregunta"></textarea>
+                        <div class="error" th:if="${#fields.hasErrors('message')}" th:errors="*{message}">Mensaje requerido</div>
+                    </div>
+                    <button type="submit" class="btn primary">Enviar mensaje</button>
+                </form>
+            </section>
+        </th:block>
     </th:block>
 </html>

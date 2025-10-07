@@ -48,6 +48,7 @@ public class HomeController {
     public String portfolio(@PathVariable String slug, Model model) {
         Profile profile = profileRepo.findBySlug(slug)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        model.addAttribute("profile", profile);
         model.addAttribute("title", profile.getFullName() + " | Portafolio");
         model.addAttribute("metaDescription", profile.getHeadline());
         model.addAttribute("socials", socialRepo.findAllByProfileSlugOrderBySortOrderAsc(slug));

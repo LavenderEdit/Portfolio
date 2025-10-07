@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content)">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -9,10 +9,13 @@
     </head>
     <body>
         <header th:replace="fragments/_navbar :: navbar"></header>
+
         <main class="page">
-            <div th:fragment="content"><!-- page content --></div>
+            <!-- aquí se inyecta el contenido de cada vista -->
+            <th:block th:replace="${content}"></th:block>
         </main>
-        <footer th:replace="fragments/_footer :: footer"></footer>
-        <script th:src="@{/js/site.js}" th:attr="nonce=${cspNonce}" defer></script>
+
+        <footer th:replace="*fragments/_footer :: footer"></footer>
+        <script th:src="@{/js/site.js}" defer></script>
     </body>
 </html>

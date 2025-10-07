@@ -1,73 +1,78 @@
-(function () {
-    const toggle = document.querySelector('[data-nav-toggle]');
-    const menu = document.querySelector('[data-nav-menu]');
+(() => {
+    // Helpers
+    const $ = (sel, ctx = document) => ctx.querySelector(sel);
+    const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
 
+    const toggle = $('[data-nav-toggle]');
+    const menu = $('[data-nav-menu]');
+    const mq = window.matchMedia('(min-width: 769px)');
+
+    // ---- Nav / menú ----
     if (toggle && menu) {
-        menu.setAttribute('data-open', window.innerWidth >= 769 ? 'true' : 'false');
-        const closeMenu = () => {
-            toggle.setAttribute('aria-expanded', 'false');
-            menu.setAttribute('data-open', 'false');
+        const setMenuOpen = (open) => {
+            menu.setAttribute('data-open', String(open));
+            toggle.setAttribute('aria-expanded', String(open));
         };
 
+        // Estado inicial según media query
+        setMenuOpen(mq.matches);
+
+        // Click del botón
         toggle.addEventListener('click', () => {
-            const expanded = toggle.getAttribute('aria-expanded') === 'true';
-            const nextState = !expanded;
-            toggle.setAttribute('aria-expanded', String(nextState));
-            menu.setAttribute('data-open', String(nextState));
-        });
+            const open = menu.getAttribute('data-open') === 'true';
+            setMenuOpen(!open);
+        }, {passive: true});
 
-        menu.querySelectorAll('.nav-link').forEach((link) => {
-            link.addEventListener('click', () => {
-                if (window.innerWidth < 769) {
-                    closeMenu();
-                }
+        // Cerrar al hacer click en un enlace (event delegation)
+        menu.addEventListener('click', (ev) => {
+            const a = ev.target.closest('.nav-link');
+            if (!a)
+                return;
+            if (!mq.matches)
+                setMenuOpen(false);
+        }, {passive: true});
+
+        // Reaccionar a cambios de viewport sin “resize” ruidoso
+        mq.addEventListener('change', (e) => setMenuOpen(e.matches));
+    }
+
+    // ---- Scroll suave interno ----
+    const smoothLinks = $$('a[href^="#"]');
+    if (smoothLinks.length) {
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        smoothLinks.forEach((link) => {
+            link.addEventListener('click', (ev) => {
+                const href = link.getAttribute('href');
+                if (!href || href.length === 1)
+                    return;
+
+                const target = document.getElementById(href.slice(1));
+                if (!target)
+                    return;
+
+                ev.preventDefault();
+                target.scrollIntoView({
+                    behavior: prefersReduced ? 'auto' : 'smooth',
+                    block: 'start'
+                });
             });
-        });
-
-        window.addEventListener('resize', () => {
-            if (window.innerWidth >= 769) {
-                menu.setAttribute('data-open', 'true');
-                toggle.setAttribute('aria-expanded', 'false');
-            } else {
-                menu.setAttribute('data-open', 'false');
-            }
         });
     }
 
-    const smoothLinks = document.querySelectorAll('a[href^="#"]');
-    smoothLinks.forEach((link) => {
-        link.addEventListener('click', (ev) => {
-            const targetId = link.getAttribute('href');
-            if (!targetId || targetId.length === 1) {
-                return;
-            }
-            const target = document.querySelector(targetId);
-            if (!target) {
-                return;
-            }
-            ev.preventDefault();
-            target.scrollIntoView({behavior: 'smooth', block: 'start'});
-        });
-    });
+    // ---- Resaltado de sección activa ----
+    const navLinks = $$('.nav-link').filter((a) => a.hash);
+    const sections = $$('section[id]');
 
-    const navLinks = Array.from(document.querySelectorAll('[data-nav-menu] .nav-link'))
-            .filter((link) => link.hash);
-    const sections = Array.from(document.querySelectorAll('section[id]'));
-
-    if (navLinks.length && sections.length) {
+    if (navLinks.length && sections.length && 'IntersectionObserver' in window) {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
-                const link = navLinks.find((nav) => nav.hash === `#${entry.target.id}`);
-                if (!link) {
+                if (!entry.isIntersecting)
                     return;
-                }
-                if (entry.isIntersecting) {
-                    navLinks.forEach((nav) => nav.classList.remove('active'));
-                    link.classList.add('active');
-                }
+                const id = entry.target.id;
+                navLinks.forEach((a) => a.classList.toggle('active', a.hash === `#${id}`));
             });
-        }, {rootMargin: '-45% 0px -45% 0px'});
+        }, {rootMargin: '-45% 0px -45% 0px', threshold: 0});
 
-        sections.forEach((section) => observer.observe(section));
+        sections.forEach((s) => observer.observe(s));
     }
 })();
