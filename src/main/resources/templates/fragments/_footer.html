@@ -1,7 +1,7 @@
 <footer class="footer" th:fragment="footer">
     <div class="footer-inner">
         <p>
-            <span th:text="${profile != null} ? profile.fullName : 'Portfolio Hub'">Portfolio Hub</span>
+            <span>Portfolio Hub</span>
             · <span th:text="${#temporals.format(#temporals.createNow(), 'yyyy')}">2024</span>
         </p>
         <p class="footer-links">

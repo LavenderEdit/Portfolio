@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  *
- * @author Joan Lavender
+ * @author Studios TKOH!
  */
 public interface SkillRepo extends JpaRepository<Skill, Long> {
 

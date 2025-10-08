@@ -7,7 +7,7 @@ import lombok.Data;
 
 /**
  *
- * @author Joan Lavender
+ * @author Studios TKOH!
  */
 @Data
 public class ContactForm {

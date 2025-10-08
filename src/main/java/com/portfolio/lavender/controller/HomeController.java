@@ -19,7 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 /**
  *
- * @author Joan Lavender
+ * @author Studios TKOH!
  */
 @Controller
 @RequiredArgsConstructor

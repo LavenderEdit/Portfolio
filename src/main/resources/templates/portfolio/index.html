@@ -5,9 +5,12 @@
             <section class="hero" id="about">
                 <div class="hero-card">
                     <div class="hero-media">
-                        <img th:if="${profile?.avatarUrl}" th:src="${profile.avatarUrl}" alt="Avatar" class="avatar">
-                        <div class="avatar placeholder" th:if="${profile?.avatarUrl == null}">
-                            <span th:text="${profile?.fullName?.substring(0,1)}">P</span>
+                        <img th:if="${profile != null and profile.avatarUrl != null}"
+                             th:src="${profile.avatarUrl}" alt="Avatar" class="avatar">
+
+                        <div class="avatar placeholder"
+                             th:if="${profile == null or profile.avatarUrl == null}">
+                            <span th:text="${profile != null and profile.fullName != null ? profile.fullName.substring(0,1) : 'P'}">P</span>
                         </div>
                     </div>
                     <div class="hero-copy">
@@ -80,10 +83,14 @@
                             <small>·</small>
                             <span th:text="${e.company}">Empresa</span>
                         </h3>
-                        <p class="timeline-date">
+                        <p class="timeline-date"
+                           th:with="
+                           hasEnd=${!e.current and e.endDate != null},
+                           endLabel=${hasEnd} ? ${#temporals.format(e.endDate, 'MMM yyyy')} : 'Actualidad'
+                           ">
                             <span th:text="${#temporals.format(e.startDate, 'MMM yyyy')}">Ene 2022</span>
                             <span>—</span>
-                            <span th:text="${e.current} ? 'Actualidad' : (e.endDate != null ? #temporals.format(e.endDate, 'MMM yyyy') : 'Actualidad')">Actualidad</span>
+                            <span th:text="${endLabel}">Actualidad</span>
                         </p>
                         <p th:text="${e.description}">Descripción del rol.</p>
                     </article>

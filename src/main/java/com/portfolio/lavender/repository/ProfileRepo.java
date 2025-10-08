@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 /**
  *
- * @author Joan Lavender
+ * @author Studios TKOH!
  */
 @Repository
 public interface ProfileRepo extends JpaRepository<Profile, Long> {

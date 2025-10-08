@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 /**
  *
- * @author Joan Lavender
+ * @author Studios TKOH!
  */
 @Repository
 public interface SocialLinkRepo extends JpaRepository<SocialLink, Long> {

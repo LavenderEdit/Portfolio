@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  *
- * @author Joan Lavender
+ * @author Studios TKOH!
  */
 public interface ContactMessageRepo extends JpaRepository<ContactMessage, Long> {
 }

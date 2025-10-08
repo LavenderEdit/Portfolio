@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 /**
  *
- * @author Joan Lavender
+ * @author Studios TKOH!
  */
 @Repository
 public interface SkillCategoryRepo extends JpaRepository<SkillCategory, Long> {

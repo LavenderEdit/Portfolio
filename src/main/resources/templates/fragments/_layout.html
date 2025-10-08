@@ -8,14 +8,14 @@
         <link rel="stylesheet" th:href="@{/css/site.css}">
     </head>
     <body>
-        <header th:replace="fragments/_navbar :: navbar"></header>
+        <header th:replace="~{fragments/_navbar :: navbar}"></header>
 
         <main class="page">
             <!-- aquí se inyecta el contenido de cada vista -->
             <th:block th:replace="${content}"></th:block>
         </main>
 
-        <footer th:replace="*fragments/_footer :: footer"></footer>
+        <footer th:replace="~{fragments/_footer :: footer}"></footer>
         <script th:src="@{/js/site.js}" defer></script>
     </body>
 </html>

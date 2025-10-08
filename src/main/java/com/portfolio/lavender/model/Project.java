@@ -22,7 +22,7 @@ import lombok.Setter;
 
 /**
  *
- * @author Joan Lavender
+ * @author Studios TKOH!
  */
 @Entity
 @Getter
