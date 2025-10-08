@@ -14,7 +14,7 @@ SET @bio_text := CONCAT(
 );
 
 UPDATE profile
-SET full_name = 'Juan Pimentel',
+SET full_name = 'Juan Santos Pimentel Lalangui',
     headline = 'Desarrollador de Software en formación | Java, PHP & Spring Boot',
     bio = @bio_text,
     email = 'gercermagden@gmail.com',
@@ -47,14 +47,18 @@ VALUES
   (@profile_id, 'Bases de Datos', 30),
   (@profile_id, 'Herramientas', 40),
   (@profile_id, 'Principios de Desarrollo', 50),
-  (@profile_id, 'Otras Habilidades Técnicas', 60);
+  (@profile_id, 'Habilidades Blandas', 60),
+  (@profile_id, 'Otras Habilidades Técnicas', 70),
+  (@profile_id, 'Idiomas', 80);
 
 SET @cat_languages := (SELECT id FROM skill_category WHERE profile_id = @profile_id AND name = 'Lenguajes de Programación');
 SET @cat_frameworks := (SELECT id FROM skill_category WHERE profile_id = @profile_id AND name = 'Frameworks y Librerías');
 SET @cat_databases := (SELECT id FROM skill_category WHERE profile_id = @profile_id AND name = 'Bases de Datos');
 SET @cat_tools := (SELECT id FROM skill_category WHERE profile_id = @profile_id AND name = 'Herramientas');
 SET @cat_principles := (SELECT id FROM skill_category WHERE profile_id = @profile_id AND name = 'Principios de Desarrollo');
+SET @cat_softskills := (SELECT id FROM skill_category WHERE profile_id = @profile_id AND name = 'Habilidades Blandas');
 SET @cat_other := (SELECT id FROM skill_category WHERE profile_id = @profile_id AND name = 'Otras Habilidades Técnicas');
+SET @cat_idioms := (SELECT id FROM skill_category WHERE profile_id = @profile_id AND name = 'Idiomas');
 
 -- Habilidades por categoría
 INSERT INTO skill (category_id, name, level, icon, sort_order)
@@ -77,6 +81,13 @@ VALUES
   (@cat_tools, 'Azure', 3, NULL, 30),
   (@cat_tools, 'Postman', 4, NULL, 40),
 
+  (@cat_softskills, 'Simpatía y asertividad', 4, NULL, 10),
+  (@cat_softskills, 'Perseverancia y tenacidad', 5, NULL, 20),
+  (@cat_softskills, 'Solución de problemas', 4, NULL, 30),
+  (@cat_softskills, 'Puntualidad y compromiso', 5, NULL, 40),
+  (@cat_softskills, 'Proactivo y trabajo en equipo', 5, NULL, 50),
+  (@cat_softskills, 'Compromiso', 5, NULL, 60),
+
   (@cat_principles, 'Modularización', 4, NULL, 10),
   (@cat_principles, 'RESTful APIs', 4, NULL, 20),
   (@cat_principles, 'MVC', 4, NULL, 30),
@@ -84,7 +95,10 @@ VALUES
 
   (@cat_other, 'Web Scraping', 3, NULL, 10),
   (@cat_other, 'Automatización', 3, NULL, 20),
-  (@cat_other, 'Documentación Técnica', 4, NULL, 30);
+  (@cat_other, 'Documentación Técnica', 4, NULL, 30),
+
+  (@cat_idioms, 'Español (Nativo)', 5, NULL, 10),
+  (@cat_idioms, 'Inglés (Avanzado)', 5, NULL, 20);
 
 SET @skill_java := (SELECT id FROM skill WHERE category_id = @cat_languages AND name = 'Java');
 SET @skill_php := (SELECT id FROM skill WHERE category_id = @cat_languages AND name = 'PHP');

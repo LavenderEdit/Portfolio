@@ -178,19 +178,25 @@ SELECT @proj_password, skill_id FROM (
 
 INSERT INTO experience (profile_id, company, role, location, start_date, end_date, current, description)
 VALUES
-  (@profile_id, 'SERVISERC', 'Desarrollador Web', 'Lima, Perú', '2024-07-01', '2024-12-31', FALSE,
-   CONCAT(
+    (@profile_id, 'SERVISERC', 'Desarrollador Web', 'Lima, Perú', '2024-07-01', '2024-12-31', FALSE,
+    CONCAT(
      'Diseño, desarrollo y mantenimiento de sitios web responsivos en HTML, CSS, JavaScript y PHP.', CHAR(10),
      'Implementación de funcionalidades a medida según requerimientos del cliente.', CHAR(10),
      'Optimización del rendimiento y mejoras en la experiencia de usuario.', CHAR(10),
      'Aseguramiento de compatibilidad multiplataforma y buenas prácticas de desarrollo.'
-   )),
-  (@profile_id, 'JHARDSYSTEX', 'Desarrollador Web', 'Lima, Perú', '2025-02-01', '2025-06-30', FALSE,
-   CONCAT(
+    )),
+    (@profile_id, 'JHARDSYSTEX', 'Desarrollador Web', 'Lima, Perú', '2025-02-01', '2025-06-30', FALSE,
+    CONCAT(
      'Desarrollo de una aplicación web para la gestión de tickets con frontend en HTML, CSS y JavaScript.', CHAR(10),
      'Construcción del backend en PHP y participación en el diseño de la base de datos relacional.', CHAR(10),
      'Coordinación con el equipo para pruebas funcionales y despliegue del sistema.'
-   ));
+    )),
+    (@profile_id, 'LUBRICANTES CLAUDIA', 'Desarrollador Frontend', 'Lima, Perú', '2025-08-01', NULL, TRUE,
+    CONCAT(
+     'Desarrollo de la interfaz principal para un sistema de administración y facturación de una empresa automotriz.', CHAR(10),
+     'Implementación de componentes en React 18, Vite 7 y TailwindCSS 3.4.14 consumiendo servicios API.', CHAR(10),
+     'Colaboración con el equipo del cliente para refinar flujos de usuario y asegurar escalabilidad.'
+    ));
 
 INSERT INTO education (profile_id, institution, degree, field, start_date, end_date, description)
 VALUES
