@@ -4,7 +4,7 @@ Full-stack web application built with Spring Boot 3 and Thymeleaf to showcase mu
 ### [Version en Español ¡AQUI!](README.md)
 
 # DEMO
-[studios-tkoh](https://studios-tkoh.azurewebsites.net)
+### [studios-tkoh](https://studios-tkoh.azurewebsites.net)
 
 ## Table of contents
 - [Highlights](#highlights)
