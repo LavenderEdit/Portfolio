@@ -100,4 +100,4 @@ src/main/resources/
 ```
 
 ## Autor(es)
--   ⧉ STUDIOS TKOH! ⧉
+⧉ STUDIOS TKOH! ⧉
