@@ -28,7 +28,7 @@ import studios.tkoh.portfolio.audit.BaseEntity;
  * @author Studios TKOH!
  */
 @Entity
-@Table(name = "user", schema = "studiostkoh.portafolio")
+@Table(name = "app_user", schema = "studiostkoh.portafolio")
 @Getter
 @Setter
 @NoArgsConstructor
