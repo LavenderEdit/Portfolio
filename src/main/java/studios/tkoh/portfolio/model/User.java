@@ -51,6 +51,7 @@ public class User extends BaseEntity implements Serializable, UserDetails {
     private String roles;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
     private Profile profile;
 
     // Implementación de UserDetails
