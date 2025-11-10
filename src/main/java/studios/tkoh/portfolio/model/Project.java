@@ -20,6 +20,7 @@ import java.util.Set;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import studios.tkoh.portfolio.audit.BaseEntity;
 
 /**
@@ -29,38 +30,55 @@ import studios.tkoh.portfolio.audit.BaseEntity;
 @Entity
 @Table(name = "project", schema = "studiostkoh.portafolio", indexes = {
     @Index(name = "idx_project_featured", columnList = "profile_id, featured, sort_order")
-}, uniqueConstraints = @UniqueConstraint(name = "uk_project_profile_slug", columnNames = {"profile_id", "slug"}))
+}, uniqueConstraints = {
+    @UniqueConstraint(name = "uk_project_profile_slug", columnNames = {"profile_id", "slug"})
+})
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString
 public class Project extends BaseEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "profile_id", nullable = false, referencedColumnName = "id")
+    @ToString.Exclude
     private Profile profile;
+
     @Column(nullable = false, length = 140)
     private String title;
+
     @Column(nullable = false, length = 160)
     private String slug;
+
     @Column(nullable = false, length = 280)
     private String summary;
+
     @Column(columnDefinition = "TEXT")
     private String description;
+
     private String repoUrl;
+
     private String liveUrl;
+
     private String coverImage;
+
     private java.time.LocalDate startDate;
+
     private java.time.LocalDate endDate;
+
     private boolean featured;
+
     private int sortOrder;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "project_skill",
-            joinColumns = @JoinColumn(name = "project_id"),
-            inverseJoinColumns = @JoinColumn(name = "skill_id"))
+            joinColumns = @JoinColumn(name = "project_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "skill_id", referencedColumnName = "id"))
     @OrderBy("sortOrder ASC, name ASC")
+    @ToString.Exclude
     private Set<Skill> skills = new LinkedHashSet<>();
-
 }
