@@ -4,5 +4,3 @@
  */
 
 CREATE SCHEMA IF NOT EXISTS `studiostkoh.portafolio`;
-
-USE `studiostkoh.portafolio`;
