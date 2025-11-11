@@ -32,4 +32,10 @@ public class GlobalExceptionHandler {
         ApiResponse<Void> apiResponse = ApiResponse.error("Credenciales inválidas");
         return new ResponseEntity<>(apiResponse, HttpStatus.UNAUTHORIZED); // 401
     }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        ApiResponse<Void> apiResponse = ApiResponse.error(ex.getMessage());
+        return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND); // 404
+    }
 }
