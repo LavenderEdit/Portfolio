@@ -6,7 +6,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import java.util.Map;
+import studios.tkoh.portfolio.dto.response.ApiResponse;
 
 /**
  *
@@ -16,26 +16,20 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<Map<String, String>> handleIllegalStateException(IllegalStateException ex) {
-        return new ResponseEntity<>(
-                Map.of("error", ex.getMessage()),
-                HttpStatus.CONFLICT // 409
-        );
+    public ResponseEntity<ApiResponse<Void>> handleIllegalStateException(IllegalStateException ex) {
+        ApiResponse<Void> apiResponse = ApiResponse.error(ex.getMessage());
+        return new ResponseEntity<>(apiResponse, HttpStatus.CONFLICT); // 409
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleUsernameNotFoundException(UsernameNotFoundException ex) {
-        return new ResponseEntity<>(
-                Map.of("error", "Invalid credentials"),
-                HttpStatus.UNAUTHORIZED // 401
-        );
+    public ResponseEntity<ApiResponse<Void>> handleUsernameNotFoundException(UsernameNotFoundException ex) {
+        ApiResponse<Void> apiResponse = ApiResponse.error("Credenciales inválidas");
+        return new ResponseEntity<>(apiResponse, HttpStatus.UNAUTHORIZED); // 401
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<Map<String, String>> handleBadCredentialsException(BadCredentialsException ex) {
-        return new ResponseEntity<>(
-                Map.of("error", "Invalid credentials"),
-                HttpStatus.UNAUTHORIZED // 401
-        );
+    public ResponseEntity<ApiResponse<Void>> handleBadCredentialsException(BadCredentialsException ex) {
+        ApiResponse<Void> apiResponse = ApiResponse.error("Credenciales inválidas");
+        return new ResponseEntity<>(apiResponse, HttpStatus.UNAUTHORIZED); // 401
     }
 }
