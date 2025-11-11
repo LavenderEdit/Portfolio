@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import studios.tkoh.portfolio.dto.auth.AuthResponse;
 import studios.tkoh.portfolio.dto.auth.LoginRequest;
 import studios.tkoh.portfolio.dto.auth.RegisterRequest;
+import studios.tkoh.portfolio.dto.response.ApiResponse;
 import studios.tkoh.portfolio.service.AuthService;
 
 /**
@@ -24,16 +25,18 @@ public class AuthController {
     private final AuthService authenticationService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(
+    public ResponseEntity<ApiResponse<AuthResponse>> register(
             @Valid @RequestBody RegisterRequest request
     ) {
-        return ResponseEntity.ok(authenticationService.register(request));
+        AuthResponse authResponse = authenticationService.register(request);
+        return ResponseEntity.ok(ApiResponse.ok("Usuario registrado exitosamente", authResponse));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(
+    public ResponseEntity<ApiResponse<AuthResponse>> login(
             @Valid @RequestBody LoginRequest request
     ) {
-        return ResponseEntity.ok(authenticationService.login(request));
+        AuthResponse authResponse = authenticationService.login(request);
+        return ResponseEntity.ok(ApiResponse.ok("Login exitoso", authResponse));
     }
 }
