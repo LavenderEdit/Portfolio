@@ -20,6 +20,7 @@ public interface PublicPortfolioMapper {
     @Mapping(target = "projects", ignore = true)
     @Mapping(target = "experiences", ignore = true)
     @Mapping(target = "education", ignore = true)
+    @Mapping(target = "certificates", ignore = true)
     PortfolioDetailDto profileToDetailDto(Profile profile);
 
     PortfolioPublicDto profileToPublicDto(Profile profile);
