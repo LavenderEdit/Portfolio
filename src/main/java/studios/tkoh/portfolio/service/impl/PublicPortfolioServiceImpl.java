@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import studios.tkoh.portfolio.dto.certificate.CertificateDto;
 import studios.tkoh.portfolio.dto.education.EducationDto;
 import studios.tkoh.portfolio.dto.experience.ExperienceDto;
 import studios.tkoh.portfolio.dto.project.ProjectDto;
@@ -14,6 +15,7 @@ import studios.tkoh.portfolio.dto.publicapi.ProjectSummaryDto;
 import studios.tkoh.portfolio.dto.skill.SkillCategoryDto;
 import studios.tkoh.portfolio.dto.social.SocialLinkDto;
 import studios.tkoh.portfolio.exception.ResourceNotFoundException;
+import studios.tkoh.portfolio.mapper.CertificateMapper;
 import studios.tkoh.portfolio.mapper.EducationMapper;
 import studios.tkoh.portfolio.mapper.ExperienceMapper;
 import studios.tkoh.portfolio.mapper.ProjectMapper;
@@ -22,6 +24,7 @@ import studios.tkoh.portfolio.mapper.SkillCategoryMapper;
 import studios.tkoh.portfolio.mapper.SocialLinkMapper;
 import studios.tkoh.portfolio.model.Profile;
 import studios.tkoh.portfolio.model.Project;
+import studios.tkoh.portfolio.repository.CertificateRepo;
 import studios.tkoh.portfolio.repository.EducationRepo;
 import studios.tkoh.portfolio.repository.ExperienceRepo;
 import studios.tkoh.portfolio.repository.ProfileRepo;
@@ -45,6 +48,7 @@ public class PublicPortfolioServiceImpl implements PublicPortfolioService {
     private final ProjectRepo projectRepository;
     private final ExperienceRepo experienceRepository;
     private final EducationRepo educationRepository;
+    private final CertificateRepo certificateRepository;
 
     private final PublicPortfolioMapper publicMapper;
     private final SocialLinkMapper socialLinkMapper;
@@ -52,6 +56,7 @@ public class PublicPortfolioServiceImpl implements PublicPortfolioService {
     private final ExperienceMapper experienceMapper;
     private final EducationMapper educationMapper;
     private final ProjectMapper projectMapper;
+    private final CertificateMapper certificateMapper;
 
     @Override
     public List<PortfolioPublicDto> getAllPublicProfiles() {
@@ -83,10 +88,15 @@ public class PublicPortfolioServiceImpl implements PublicPortfolioService {
         List<EducationDto> education = educationRepository.findAllByProfileSlugOrderByStartDateDesc(slug)
                 .stream().map(educationMapper::toDto).toList();
 
+        List<CertificateDto> certificates = certificateRepository.findAllByProfileSlug(slug)
+                .stream().map(certificateMapper::toDto).toList();
+
         return new PortfolioDetailDto(
                 dto.slug(), dto.fullName(), dto.headline(), dto.bio(),
                 dto.contactEmail(), dto.location(), dto.avatarUrl(), dto.resumeUrl(),
-                socialLinks, skillCategories, projects, experiences, education
+                dto.isTkohCollaborator(),
+                socialLinks, skillCategories, projects, experiences, education,
+                certificates
         );
     }
 
