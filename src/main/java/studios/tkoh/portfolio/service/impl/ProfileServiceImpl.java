@@ -63,4 +63,14 @@ public class ProfileServiceImpl implements ProfileService {
         Profile savedProfile = profileRepository.save(profile);
         return profileMapper.toDto(savedProfile);
     }
+
+    @Override
+    @Transactional
+    public ProfileDto updateContactEmail(Long profileId, String newContactEmail) {
+        Profile profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new ResourceNotFoundException("Profile", "id", profileId));
+        profile.setContactEmail(newContactEmail);
+        Profile savedProfile = profileRepository.save(profile);
+        return profileMapper.toDto(savedProfile);
+    }
 }
