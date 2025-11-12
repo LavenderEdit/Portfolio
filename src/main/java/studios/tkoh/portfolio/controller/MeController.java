@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import studios.tkoh.portfolio.dto.profile.ContactEmailUpdateRequest;
 import studios.tkoh.portfolio.dto.profile.ProfileDto;
 import studios.tkoh.portfolio.dto.profile.ProfileUpdateRequest;
 import studios.tkoh.portfolio.dto.response.ApiResponse;
@@ -47,5 +48,18 @@ public class MeController {
         ProfileDto updatedDto = profileService.updateMyProfile(profileId, request);
 
         return ResponseEntity.ok(ApiResponse.ok("Perfil actualizado exitosamente", updatedDto));
+    }
+
+    @PutMapping("/settings/contact-email")
+    public ResponseEntity<ApiResponse<ProfileDto>> updateContactEmail(
+            Authentication authentication,
+            @Valid @RequestBody ContactEmailUpdateRequest request) {
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Long profileId = userDetails.getProfileId();
+
+        ProfileDto updatedDto = profileService.updateContactEmail(profileId, request.email());
+
+        return ResponseEntity.ok(ApiResponse.ok("Email de contacto actualizado exitosamente", updatedDto));
     }
 }
