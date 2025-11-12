@@ -31,6 +31,7 @@ build/
 .env-dev
 .env-prod
 nbactions.xml
+src/main/resources/gcp
 
 ### VS Code ###
 .vscode/
