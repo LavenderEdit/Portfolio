@@ -37,6 +37,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/portfolios/*/contact").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/skills").permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
+                .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
                 .requestMatchers("/api/me/**").authenticated()
                 .anyRequest().authenticated()
                 )
