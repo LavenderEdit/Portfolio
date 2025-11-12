@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import studios.tkoh.portfolio.config.GoogleDriveConfig;
+import studios.tkoh.portfolio.dto.certificate.CertificateDto;
 import studios.tkoh.portfolio.dto.profile.ProfileDto;
 import studios.tkoh.portfolio.dto.project.ProjectDto;
 import studios.tkoh.portfolio.dto.skill.SkillDto;
@@ -20,6 +21,7 @@ import studios.tkoh.portfolio.model.Skill;
 import studios.tkoh.portfolio.repository.ProfileRepo;
 import studios.tkoh.portfolio.repository.SkillRepo;
 import studios.tkoh.portfolio.security.CustomUserDetails;
+import studios.tkoh.portfolio.service.CertificateService;
 import studios.tkoh.portfolio.service.GoogleDriveService;
 import studios.tkoh.portfolio.service.ProjectService;
 import studios.tkoh.portfolio.service.ProfileService;
@@ -37,6 +39,7 @@ public class UploadServiceImpl implements UploadService {
     private final GoogleDriveConfig driveConfig;
     private final ProfileService profileService;
     private final ProjectService projectService;
+    private final CertificateService certificateService;
     private final SkillRepo skillRepository;
     private final ProfileRepo profileRepository;
     private final SkillMapper skillMapper;
@@ -75,7 +78,6 @@ public class UploadServiceImpl implements UploadService {
         CustomUserDetails user = getAuthenticatedUser();
         Long profileId = user.getProfileId();
 
-        // 1. Verificar propiedad y obtener DTO (el DTO ya tiene el slug)
         ProjectDto project = projectService.findDtoById(projectId);
 
         String filename = generateUniqueFilename(project.slug(), "cover", file.getOriginalFilename());
@@ -83,7 +85,6 @@ public class UploadServiceImpl implements UploadService {
 
         UploadResponse response = driveService.uploadFile(file, folderId, filename);
 
-        // 2. Delegamos la actualización al ProjectService
         return projectService.updateCoverImageUrl(projectId, profileId, response.publicUrl());
     }
 
@@ -93,7 +94,6 @@ public class UploadServiceImpl implements UploadService {
         CustomUserDetails user = getAuthenticatedUser();
         Long profileId = user.getProfileId();
 
-        // 1. Verificar propiedad del skill
         Skill skill = skillRepository.findById(skillId)
                 .orElseThrow(() -> new ResourceNotFoundException("Skill", "id", skillId));
 
@@ -112,7 +112,22 @@ public class UploadServiceImpl implements UploadService {
         return skillMapper.toDto(savedSkill);
     }
 
-    // --- Helpers ---
+    @Override
+    @Transactional
+    public CertificateDto uploadCertificateFile(Long certificateId, MultipartFile file) throws IOException, GeneralSecurityException {
+        CustomUserDetails user = getAuthenticatedUser();
+        Long profileId = user.getProfileId();
+
+        CertificateDto certificate = certificateService.findDtoById(certificateId);
+
+        String filename = generateUniqueFilename(certificate.name(), "certificate", file.getOriginalFilename());
+        String folderId = driveConfig.getFolders().getCertificates();
+
+        UploadResponse response = driveService.uploadFile(file, folderId, filename);
+
+        return certificateService.updateCertificateFile(certificateId, profileId, response.publicUrl(), response.fileId());
+    }
+
     private CustomUserDetails getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserDetails)) {
