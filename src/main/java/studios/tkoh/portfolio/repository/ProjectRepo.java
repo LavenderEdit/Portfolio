@@ -19,4 +19,12 @@ public interface ProjectRepo extends JpaRepository<Project, Long> {
 
     @EntityGraph(attributePaths = "skills")
     List<Project> findAllByProfileSlugOrderByFeaturedDescSortOrderAsc(String profileSlug);
+
+    @EntityGraph(attributePaths = "skills")
+    Optional<Project> findByIdAndProfileId(Long id, Long profileId);
+
+    @EntityGraph(attributePaths = "skills")
+    List<Project> findAllByProfileIdOrderBySortOrderAsc(Long profileId);
+
+    boolean existsByProfileIdAndSlug(Long profileId, String slug);
 }
