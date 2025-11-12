@@ -11,4 +11,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface SkillRepo extends JpaRepository<Skill, Long> {
 
     List<Skill> findAllByCategoryIdOrderBySortOrderAsc(Long categoryId);
+
+    List<Skill> findAllByCategoryIdAndProfileId(Long categoryId, Long profileId);
+
+    List<Skill> findAllByIdInAndCategoryIdAndProfileId(List<Long> ids, Long categoryId, Long profileId);
 }
