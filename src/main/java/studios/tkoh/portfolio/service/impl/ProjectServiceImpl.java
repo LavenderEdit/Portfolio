@@ -1,5 +1,6 @@
 package studios.tkoh.portfolio.service.impl;
 
+import java.util.HashSet;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -13,8 +14,10 @@ import studios.tkoh.portfolio.exception.ResourceNotFoundException;
 import studios.tkoh.portfolio.mapper.ProjectMapper;
 import studios.tkoh.portfolio.model.Profile;
 import studios.tkoh.portfolio.model.Project;
+import studios.tkoh.portfolio.model.Skill;
 import studios.tkoh.portfolio.repository.ProfileRepo;
 import studios.tkoh.portfolio.repository.ProjectRepo;
+import studios.tkoh.portfolio.repository.SkillRepo;
 import studios.tkoh.portfolio.security.CustomUserDetails;
 import studios.tkoh.portfolio.service.ProjectService;
 
@@ -28,6 +31,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     private final ProjectRepo projectRepository;
     private final ProfileRepo profileRepository;
+    private final SkillRepo skillRepository;
     private final ProjectMapper projectMapper;
 
     @Override
@@ -92,6 +96,26 @@ public class ProjectServiceImpl implements ProjectService {
                 .stream()
                 .map(projectMapper::toDto)
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public ProjectDto associateSkills(Long projectId, List<Long> skillIds) {
+        Long profileId = getAuthenticatedUser().getProfileId();
+
+        Project project = projectRepository.findByIdAndProfileId(projectId, profileId)
+                .orElseThrow(() -> new ResourceNotFoundException("Project", "id", projectId));
+
+        List<Skill> skillsToAssociate = skillRepository.findAllByIdInAndCategory_ProfileId(skillIds, profileId);
+
+        if (skillsToAssociate.size() != skillIds.size()) {
+            throw new ResourceNotFoundException("Uno o más skills no se encontraron o no pertenecen al usuario.");
+        }
+
+        project.setSkills(new HashSet<>(skillsToAssociate));
+        Project savedProject = projectRepository.save(project);
+
+        return projectMapper.toDto(savedProject);
     }
 
     private CustomUserDetails getAuthenticatedUser() {
