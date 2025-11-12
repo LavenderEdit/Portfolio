@@ -73,4 +73,16 @@ public class ProfileServiceImpl implements ProfileService {
         Profile savedProfile = profileRepository.save(profile);
         return profileMapper.toDto(savedProfile);
     }
+
+    @Override
+    @Transactional
+    public ProfileDto toggleTkohCollaborator(Long profileId) {
+        Profile profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new ResourceNotFoundException("Profile", "id", profileId));
+
+        profile.setTkohCollaborator(!profile.isTkohCollaborator());
+
+        Profile savedProfile = profileRepository.save(profile);
+        return profileMapper.toDto(savedProfile);
+    }
 }
