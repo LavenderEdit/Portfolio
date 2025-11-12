@@ -12,4 +12,8 @@ public interface ProfileService {
     ProfileDto getMyProfile(Long profileId);
 
     ProfileDto updateMyProfile(Long profileId, ProfileUpdateRequest request);
+
+    ProfileDto updateAvatarUrl(Long profileId, String newAvatarUrl);
+
+    ProfileDto updateResumeUrl(Long profileId, String newResumeUrl);
 }
