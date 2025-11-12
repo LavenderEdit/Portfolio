@@ -26,5 +26,6 @@ public class GoogleDriveConfig {
         private String userResumes;
         private String projectsCover;
         private String skillsIcon;
+        private String certificates;
     }
 }
