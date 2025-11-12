@@ -64,4 +64,7 @@ public class Profile extends BaseEntity implements Serializable {
 
     @Column(name = "resume_url")
     private String resumeUrl;
+
+    @Column(name = "is_tkoh_collaborator", nullable = false)
+    private boolean isTkohCollaborator = false;
 }
