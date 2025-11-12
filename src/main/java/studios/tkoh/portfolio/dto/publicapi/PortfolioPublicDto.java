@@ -8,6 +8,7 @@ public record PortfolioPublicDto(
         String slug,
         String fullName,
         String headline,
-        String avatarUrl) {
+        String avatarUrl,
+        boolean isTkohCollaborator) {
 
 }
