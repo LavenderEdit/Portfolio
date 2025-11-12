@@ -15,4 +15,6 @@ public interface SkillRepo extends JpaRepository<Skill, Long> {
     List<Skill> findAllByCategoryIdAndProfileId(Long categoryId, Long profileId);
 
     List<Skill> findAllByIdInAndCategoryIdAndProfileId(List<Long> ids, Long categoryId, Long profileId);
+    
+    List<Skill> findAllByIdInAndCategory_ProfileId(List<Long> ids, Long profileId);
 }
