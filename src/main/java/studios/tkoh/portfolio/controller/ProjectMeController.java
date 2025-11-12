@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import studios.tkoh.portfolio.controller.generic.DtoCrudController;
 import studios.tkoh.portfolio.dto.project.ProjectCreateRequest;
 import studios.tkoh.portfolio.dto.project.ProjectDto;
+import studios.tkoh.portfolio.dto.project.ProjectSkillAssociationRequest;
 import studios.tkoh.portfolio.dto.project.ProjectUpdateRequest;
 import studios.tkoh.portfolio.dto.response.ApiResponse;
 import studios.tkoh.portfolio.service.ProjectService;
@@ -75,5 +77,15 @@ public class ProjectMeController implements DtoCrudController<ProjectDto, Projec
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         projectService.delete(id);
         return ResponseEntity.ok(ApiResponse.ok("Proyecto eliminado exitosamente"));
+    }
+
+    // --- Endpoint de Asociación de Skills ---
+    @PostMapping("/{projectId}/skills")
+    public ResponseEntity<ApiResponse<ProjectDto>> associateSkills(
+            @PathVariable Long projectId,
+            @Valid @RequestBody ProjectSkillAssociationRequest request) {
+
+        ProjectDto updatedProject = projectService.associateSkills(projectId, request.skillIds());
+        return ResponseEntity.ok(ApiResponse.ok("Skills asociados al proyecto exitosamente", updatedProject));
     }
 }
