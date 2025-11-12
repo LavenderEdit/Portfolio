@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import studios.tkoh.portfolio.dto.certificate.CertificateDto;
 import studios.tkoh.portfolio.dto.profile.ProfileDto;
 import studios.tkoh.portfolio.dto.project.ProjectDto;
 import studios.tkoh.portfolio.dto.response.ApiResponse;
@@ -69,6 +70,18 @@ public class UploadController {
             return ResponseEntity.ok(ApiResponse.ok("Icono de skill actualizado", updatedSkill));
         } catch (IOException | GeneralSecurityException e) {
             return new ResponseEntity<>(ApiResponse.error("Error al subir icono: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/certificate/{certificateId}/file")
+    public ResponseEntity<ApiResponse<CertificateDto>> uploadCertificateFile(
+            @PathVariable Long certificateId,
+            @RequestParam("file") MultipartFile file) {
+        try {
+            CertificateDto updatedCertificate = uploadService.uploadCertificateFile(certificateId, file);
+            return ResponseEntity.ok(ApiResponse.ok("Archivo de certificado subido", updatedCertificate));
+        } catch (IOException | GeneralSecurityException e) {
+            return new ResponseEntity<>(ApiResponse.error("Error al subir archivo: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
