@@ -43,4 +43,24 @@ public class ProfileServiceImpl implements ProfileService {
 
         return profileMapper.toDto(savedProfile);
     }
+
+    @Override
+    @Transactional
+    public ProfileDto updateAvatarUrl(Long profileId, String newAvatarUrl) {
+        Profile profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new ResourceNotFoundException("Profile", "id", profileId));
+        profile.setAvatarUrl(newAvatarUrl);
+        Profile savedProfile = profileRepository.save(profile);
+        return profileMapper.toDto(savedProfile);
+    }
+
+    @Override
+    @Transactional
+    public ProfileDto updateResumeUrl(Long profileId, String newResumeUrl) {
+        Profile profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new ResourceNotFoundException("Profile", "id", profileId));
+        profile.setResumeUrl(newResumeUrl);
+        Profile savedProfile = profileRepository.save(profile);
+        return profileMapper.toDto(savedProfile);
+    }
 }
