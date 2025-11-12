@@ -13,4 +13,6 @@ import studios.tkoh.portfolio.service.generic.DtoCrudService;
 public interface ProjectService extends DtoCrudService<ProjectDto, ProjectCreateRequest, ProjectUpdateRequest, Long> {
 
     ProjectDto associateSkills(Long projectId, List<Long> skillIds);
+
+    ProjectDto updateCoverImageUrl(Long projectId, Long profileId, String newCoverImageUrl);
 }
