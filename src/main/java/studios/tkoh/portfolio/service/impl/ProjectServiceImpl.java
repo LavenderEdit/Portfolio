@@ -118,6 +118,16 @@ public class ProjectServiceImpl implements ProjectService {
         return projectMapper.toDto(savedProject);
     }
 
+    @Override
+    @Transactional
+    public ProjectDto updateCoverImageUrl(Long projectId, Long profileId, String newCoverImageUrl) {
+        Project project = projectRepository.findByIdAndProfileId(projectId, profileId)
+                .orElseThrow(() -> new ResourceNotFoundException("Project", "id", projectId));
+        project.setCoverImage(newCoverImageUrl);
+        Project savedProject = projectRepository.save(project);
+        return projectMapper.toDto(savedProject);
+    }
+
     private CustomUserDetails getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserDetails)) {
