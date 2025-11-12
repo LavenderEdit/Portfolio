@@ -1,6 +1,7 @@
 package studios.tkoh.portfolio.dto.publicapi;
 
 import java.util.List;
+import studios.tkoh.portfolio.dto.certificate.CertificateDto;
 import studios.tkoh.portfolio.dto.education.EducationDto;
 import studios.tkoh.portfolio.dto.experience.ExperienceDto;
 import studios.tkoh.portfolio.dto.skill.SkillCategoryDto;
@@ -19,10 +20,12 @@ public record PortfolioDetailDto(
         String location,
         String avatarUrl,
         String resumeUrl,
+        boolean isTkohCollaborator,
         List<SocialLinkDto> socialLinks,
         List<SkillCategoryDto> skillCategories,
         List<ProjectSummaryDto> projects,
         List<ExperienceDto> experiences,
-        List<EducationDto> education) {
+        List<EducationDto> education,
+        List<CertificateDto> certificates) {
 
 }
