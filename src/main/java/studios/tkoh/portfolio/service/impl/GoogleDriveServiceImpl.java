@@ -9,17 +9,16 @@ import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.Permission;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.auth.oauth2.UserCredentials;
 import jakarta.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import studios.tkoh.portfolio.config.GoogleDriveConfig;
 import studios.tkoh.portfolio.dto.upload.UploadResponse;
 import studios.tkoh.portfolio.service.GoogleDriveService;
 
@@ -31,8 +30,16 @@ import studios.tkoh.portfolio.service.GoogleDriveService;
 @RequiredArgsConstructor
 public class GoogleDriveServiceImpl implements GoogleDriveService {
 
-    private final GoogleDriveConfig driveConfig;
     private Drive driveService;
+
+    @Value("${google.drive.oauth.client-id}")
+    private String clientId;
+
+    @Value("${google.drive.oauth.client-secret}")
+    private String clientSecret;
+
+    @Value("${google.drive.oauth.refresh-token}")
+    private String refreshToken;
 
     private static final String APPLICATION_NAME = "Portfolio Hub API";
 
@@ -42,16 +49,17 @@ public class GoogleDriveServiceImpl implements GoogleDriveService {
     }
 
     private Drive buildDriveService() throws IOException, GeneralSecurityException {
-        InputStream credentialsStream = GoogleDriveServiceImpl.class
-                .getResourceAsStream(driveConfig.getServiceAccountKeyPath());
 
-        if (credentialsStream == null) {
-            throw new FileNotFoundException("Recurso de clave de cuenta de servicio no encontrado: "
-                    + driveConfig.getServiceAccountKeyPath());
-        }
-
-        GoogleCredentials credentials = GoogleCredentials.fromStream(credentialsStream)
+        // Ya no usamos el archivo JSON, usamos las credenciales del USUARIO (OAuth)
+        GoogleCredentials credentials = UserCredentials.newBuilder()
+                .setClientId(clientId)
+                .setClientSecret(clientSecret)
+                .setRefreshToken(refreshToken)
+                .build()
                 .createScoped(Collections.singletonList(DriveScopes.DRIVE_FILE));
+
+        // Refrescamos el token para asegurarnos de que tenemos uno de acceso válido
+        credentials.refreshAccessToken();
 
         NetHttpTransport httpTransport = new NetHttpTransport();
         return new Drive.Builder(httpTransport, GsonFactory.getDefaultInstance(), new HttpCredentialsAdapter(credentials))
