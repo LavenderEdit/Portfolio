@@ -1,103 +1,186 @@
-# Studios TKOH!
-Aplicación web full-stack construida con Spring Boot 3 y Thymeleaf para presentar múltiples portafolios profesionales desde una sola instancia. El proyecto incluye páginas dinámicas, formulario de contacto persistente y datos de ejemplo ricos que demuestran perfiles de desarrolladores reales.
+<p align="center">
+  <a href="https://studios-tkoh.azurewebsites.net/" target="_blank">
+    <img src="https://drive.google.com/uc?export=view&id=1TuT30CiBkinh85WuTvjKGKN47hCyCS0Z" width="300" alt="Studios TKOH Logo">
+  </a>
+</p>
 
-### [English version HERE!](README.en.md)
+# 🎯 Portfolio Hub API
 
-# Demo
-### [studios-tkoh](https://studios-tkoh.azurewebsites.net)
+**API REST** construida con **Spring Boot 3**, **Spring Security (JWT)** y **Spring Data JPA** para gestionar y exponer múltiples portafolios profesionales.
 
-## Tabla de contenidos
-- [Características destacadas](#características-destacadas)
-- [Arquitectura y componentes](#arquitectura-y-componentes)
-- [Base de datos y migraciones](#base-de-datos-y-migraciones)
-- [Datos de ejemplo incluidos](#datos-de-ejemplo-incluidos)
-- [Requisitos previos](#requisitos-previos)
-- [Configuración y variables de entorno](#configuración-y-variables-de-entorno)
-- [Ejecución local](#ejecución-local)
-- [Estructura del proyecto](#estructura-del-proyecto)
-- [Pruebas](#pruebas)
-- [Siguientes pasos sugeridos](#siguientes-pasos-sugeridos)
+[➡️ English version HERE!](README.en.md)
 
-## Características destacadas
-- **Portafolios múltiples con rutas amigables**: la página principal lista todos los perfiles disponibles y redirige automáticamente si solo existe uno. Cada perfil se expone en `/portfolio/{slug}` con encabezados dinámicos, secciones de habilidades, proyectos, experiencia, educación y formulario de contacto. [HomeController](src/main/java/com/portfolio/lavender/controller/HomeController.java) orquesta la carga de datos.
-- **Detalle de proyectos**: secciones enriquecidas con imágenes, enlaces a repositorios/demos y listado de habilidades asociadas por proyecto, accesibles en `/portfolio/{profileSlug}/projects/{slug}` mediante [ProjectController](src/main/java/com/portfolio/lavender/controller/ProjectController.java).
-- **Formulario de contacto validado**: validación del lado del servidor con Jakarta Bean Validation y persistencia de mensajes a través de [ContactController](src/main/java/com/portfolio/lavender/controller/ContactController.java), [ContactForm DTO](src/main/java/com/portfolio/lavender/dto/simple/ContactForm.java) y el repositorio JPA [ContactMessageRepo](src/main/java/com/portfolio/lavender/repository/ContactMessageRepo.java).
-- **Frontend responsivo con dark theme**: diseño moderno definido en [`static/css/site.css`](src/main/resources/static/css/site.css) y comportamiento accesible del menú, navegación suave y resaltado de sección implementado en [`static/js/site.js`](src/main/resources/static/js/site.js).
-- **Plantillas Thymeleaf reutilizables**: fragmentos de layout, barra de navegación y pie de página bajo `templates/fragments` permiten mantener consistencia visual entre las vistas principales (`profiles`, `portfolio`, `project`).
+---
 
-## Arquitectura y componentes
-- **Capa web (MVC)**: controladores Spring MVC entregan modelos a plantillas Thymeleaf.
-  - `HomeController` carga la lista de perfiles y la vista principal del portafolio individual.
-  - `ProjectController` muestra el detalle de un proyecto, incluyendo metadatos para SEO.
-  - `ContactController` procesa el formulario de contacto con mensajes flash.
-- **Capa de dominio**: entidades JPA (`Profile`, `SocialLink`, `SkillCategory`, `Skill`, `Project`, `Experience`, `Education`, `ContactMessage`) modelan la información que se muestra en el portafolio.
-- **Persistencia**: repositorios Spring Data JPA con `@EntityGraph` optimizan la carga de relaciones (por ejemplo, habilidades asociadas a categorías y proyectos).
-- **Configuración de aplicación**: `application.properties` habilita Flyway, valida el esquema y define los placeholders para la conexión MySQL. Perfiles `dev` y `prod` ajustan la verbosidad de logs y parámetros del pool Hikari.
-- **Dependencias clave** (ver [`pom.xml`](pom.xml)):
-  - Spring Boot starters para web, datos JPA, validación y Thymeleaf.
-  - Flyway con extensión MySQL para migraciones versionadas.
-  - Lombok para reducir boilerplate y configuración de MapStruct lista para futuros DTO mappers.
+## 🚀 Características Principales
 
-## Base de datos y migraciones
-- **Esquema inicial**: `V1__init.sql` crea tablas para perfiles, redes sociales, categorías de habilidades, proyectos con tabla puente `project_skill`, experiencia, educación y mensajes de contacto.
-- **Soporte multi-perfil**: `V2__multi_profile_support.sql` refuerza claves foráneas e índices para asociar cada recurso a un perfil específico, asegurando que las rutas por *slug* sean únicas por portafolio.
-- **Seeders versionados**: migraciones `V4` a `V8` reinicializan colecciones dependientes y agregan datos coherentes (habilidades, proyectos, experiencias y educación) para distintos perfiles. Esto permite tener contenido atractivo en el primer arranque sin tareas manuales.
+### 🔒 API Segura (Backend)
+Toda la lógica de negocio, seguridad y acceso a datos está en este proyecto.
 
-## Datos de ejemplo incluidos
-- **Juan Santos Pimentel Lalangui** (`juan-lavender-1`): perfil full-stack con proyectos como *Chattide Web*, *app-swing*, *Grading API* y *BusquedaPokemon*, además de experiencia profesional y formación en SENATI.
-- **Bryan Alexander Vidal Crispin** (`bryan-alexander-vidal-crispin`): enfoque web fullstack con proyectos SPA y utilidades en React/Vite, experiencias en SERVISERC, JHARDSYSTEX y LUBRICANTES CLAUDIA.
-- **Andriy Lionel Pastrana Cajavilca** (`andriy-lionel-pastrana-cajavilca`): especialización frontend y automatización con proyectos personales desplegados en GitHub Pages y experiencia en Python, Java Swing y React para sistemas empresariales.
+### 🔑 Autenticación JWT
+Registro e inicio de sesión (`/api/auth`) que genera un **JSON Web Token** para asegurar los endpoints.
 
-Cada migración elimina y vuelve a poblar datos relacionados para mantener coherencia, por lo que es seguro ejecutar Flyway en entornos limpios o existentes.
+### 🧑‍💼 Gestión de Portafolio
+Endpoints privados (`/api/me/**`) para que los usuarios autenticados puedan crear, leer, actualizar y eliminar (CRUD) todos los aspectos de su portafolio:
 
-## Requisitos previos
-- Java 21 (JDK) configurado en el `PATH`.
-- Maven 3.9+.
-- Servidor MySQL 8.0+ accesible (puedes usar Docker) con un esquema vacío.
+- Perfil (**Profile**)
+- Experiencia (**Experience**)
+- Educación (**Education**)
+- Redes Sociales (**SocialLink**)
+- Certificados (**Certificate**)
+- Proyectos (**Project**)
+- Habilidades (por Categorías) (**SkillCategory**, **Skill**)
 
-## Configuración y variables de entorno
-La aplicación espera variables de entorno estándar para la conexión MySQL:
+### 🌍 API Pública
+Endpoints públicos (`/api/portfolios/**`) que permiten a cualquier cliente visualizar los datos de los portafolios:
+- Lista de perfiles.
+- Detalle de un perfil.
+- Detalle de un proyecto.
+
+### ☁️ Gestión de Archivos con Google Drive
+Integración completa para subir archivos (avatares, currículums, portadas de proyectos, iconos) a **Google Drive** mediante su API, guardando únicamente la **URL pública** en la base de datos.
+
+### 📧 Notificaciones por Email
+Envío de correos (por ejemplo, desde un formulario de contacto) usando **Spring Mail**.
+
+### 🗄️ Base de Datos y Migraciones
+Usa **MySQL** con **Flyway** para una gestión de esquemas y migraciones versionadas.
+
+---
+
+## 🧩 Tecnologías Utilizadas
+
+| Categoría | Tecnología |
+|------------|-------------|
+| **Backend** | Spring Boot 3 |
+| **Seguridad** | Spring Security 6 (JWT) |
+| **Datos** | Spring Data JPA (Hibernate) |
+| **Base de Datos** | MySQL |
+| **Migraciones** | Flyway |
+| **Mapeo de DTOs** | MapStruct |
+| **Utilidades** | Lombok |
+| **Validación** | Jakarta Bean Validation |
+| **Uploads** | Google Drive API v3 |
+| **Email** | Spring Boot Mail (SMTP) |
+| **Documentación** | SpringDoc (Swagger UI) |
+
+---
+
+## 🧱 Base de Datos y Migraciones
+
+- **Esquema:** `studiostkoh.portafolio` (definido en `V1__init.sql`).
+- **Tablas Principales:**  
+  `app_user`, `profile`, `social_link`, `skill_category`, `skill`, `project`,  
+  `experience`, `education`, `contact_message`, `certificate`, `project_skill`.
+- **Migraciones:**  
+  Gestionadas automáticamente por **Flyway**, ubicadas en  
+  `src/main/resources/db/migration`.
+
+---
+
+## ⚙️ Requisitos Previos
+
+- **Java 21 (JDK)**  
+- **Maven 3.9+**  
+- **MySQL 8.0+** (con un esquema vacío, ej. `studiostkoh.portafolio`)  
+- **Credenciales de Google Cloud Platform (OAuth)** para la API de Google Drive  
+- **Credenciales SMTP** (por ejemplo, Gmail App Password) para envío de correos
+
+---
+
+## 🔧 Configuración y Variables de Entorno
+
+La aplicación espera las siguientes variables de entorno (o propiedades en `application.properties`):
 
 ```bash
+# Base de Datos MySQL
 export MYSQL_HOST=localhost
 export MYSQL_PORT=3306
-export MYSQL_DATABASE=portfolio
-export MYSQL_USER=portfolio_user
-export MYSQL_PASSWORD=super_seguro
-```
+export MYSQL_DATABASE=studiostkoh.portafolio
+export MYSQL_USER=tu_usuario
+export MYSQL_PASSWORD=tu_password
 
-Ejemplo rápido para levantar MySQL con Docker:
+# Seguridad JWT
+export JWT_TOKEN=tu_clave_secreta_larga_para_jwt
+export JWT_EXPIRATION_TIME=60 # (En minutos)
+
+# Google Drive (OAuth 2.0)
+export DRIVE_OAUTH_CLIENT_ID=tu_client_id
+export DRIVE_OAUTH_CLIENT_SECRET=tu_client_secret
+export DRIVE_OAUTH_REFRESH_TOKEN=tu_refresh_token
+
+# Google Drive (IDs de Carpetas)
+export DRIVE_FOLDER_USER_AVATARS=id_carpeta_avatares
+export DRIVE_FOLDER_USER_RESUMES=id_carpeta_resumes
+export DRIVE_FOLDER_PROJECTS_COVER=id_carpeta_covers
+export DRIVE_FOLDER_SKILLS_ICON=id_carpeta_iconos
+export DRIVE_FOLDER_CERTIFICATES=id_carpeta_certificados
+
+# Email (SMTP)
+export SMTP_HOST=smtp.gmail.com
+export SMTP_PORT=587
+export GMAIL_APP_EMAIL=tu_email@gmail.com
+export GMAIL_APP_PASSWORD=tu_google_app_password
+````
+
+---
+
+## 🧠 Ejecución Local
+
+1. Clona el repositorio.
+2. Configura las variables de entorno mencionadas.
+3. Asegúrate de que tu servidor MySQL esté en línea y el esquema exista.
+4. Ejecuta la aplicación:
 
 ```bash
-docker run --name portfolio-mysql -e MYSQL_ROOT_PASSWORD=secret -e MYSQL_DATABASE=portfolio \
-  -p 3306:3306 -d mysql:8.0
+./mvnw spring-boot:run
 ```
 
-Crea un usuario y otorga permisos según tus políticas de seguridad.
+* La API estará disponible en: [http://localhost:8080](http://localhost:8080)
+* Documentación (Swagger UI):
+  [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
 
-## Ejecución local
-1. Clona el repositorio y entra en la carpeta `Portfolio`.
-2. Configura las variables de entorno mencionadas.
-3. Ejecuta las migraciones y levanta la aplicación:
-   ```bash
-   ./mvnw spring-boot:run
-   ```
-4. Visita `http://localhost:8080` para navegar entre los portafolios. Flyway aplicará automáticamente las migraciones al arrancar.
+---
 
-## Estructura del proyecto
-```
-src/main/java/com/portfolio/lavender/
-├── controller/      # Controladores MVC (home, proyectos, contacto)
-├── dto/simple/      # DTOs para formularios
-├── model/           # Entidades JPA del dominio
-└── repository/      # Repositorios Spring Data JPA
+## 📚 Estructura de Endpoints (Resumen)
 
-src/main/resources/
-├── templates/       # Vistas Thymeleaf y fragmentos compartidos
-├── static/          # CSS y JavaScript del frontend
-├── db/migration/    # Migraciones Flyway (esquema + semillas)
-└── application*.properties
-```
+### 🔐 Autenticación
 
-## Autor(es)
-⧉ STUDIOS TKOH! ⧉
+| Método | Endpoint             | Descripción                    |
+| ------ | -------------------- | ------------------------------ |
+| POST   | `/api/auth/register` | Registro de nuevo usuario      |
+| POST   | `/api/auth/login`    | Inicio de sesión, devuelve JWT |
+
+### 👤 Usuario Autenticado (`/api/me/**`)
+
+| Entidad                   | Métodos Disponibles                                 |
+| ------------------------- | --------------------------------------------------- |
+| **Profile**               | `GET`, `PUT`                                        |
+| **Experience**            | `GET`, `POST`, `PUT`, `DELETE`                      |
+| **Education**             | `GET`, `POST`, `PUT`, `DELETE`                      |
+| **SocialLink**            | `GET`, `POST`, `PUT`, `DELETE`                      |
+| **Project**               | `GET`, `POST`, `PUT`, `DELETE`                      |
+| **Certificate**           | `GET`, `POST`, `PUT`, `DELETE`                      |
+| **SkillCategory / Skill** | `GET`, `POST /batch`, `PUT /batch`, `DELETE /batch` |
+| **Uploads**               | `POST /api/me/upload/...`                           |
+
+### 🌐 API Pública (`/api/portfolios/**`)
+
+| Método | Endpoint                                               | Descripción                  |
+| ------ | ------------------------------------------------------ | ---------------------------- |
+| GET    | `/api/portfolios`                                      | Lista todos los perfiles     |
+| GET    | `/api/portfolios/{slug}`                               | Detalle de un portafolio     |
+| GET    | `/api/portfolios/{profileSlug}/projects/{projectSlug}` | Detalle de un proyecto       |
+| POST   | `/api/portfolios/{slug}/contact`                       | Envía un mensaje de contacto |
+
+### 🛠️ Administración
+
+| Método | Endpoint                                              | Descripción                           |
+| ------ | ----------------------------------------------------- | ------------------------------------- |
+| POST   | `/api/admin/profiles/{profileId}/toggle-collaborator` | Endpoint de ejemplo para rol de Admin |
+
+---
+
+<p align="center">
+  <sub>🛠️ Desarrollado con 💙 por <strong>Studios TKOH</strong></sub><br>
+</p>
