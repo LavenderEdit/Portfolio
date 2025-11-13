@@ -12,9 +12,9 @@ public interface SkillRepo extends JpaRepository<Skill, Long> {
 
     List<Skill> findAllByCategoryIdOrderBySortOrderAsc(Long categoryId);
 
-    List<Skill> findAllByCategoryIdAndProfileId(Long categoryId, Long profileId);
+    List<Skill> findAllByCategoryIdAndCategory_Profile_Id(Long categoryId, Long profileId);
 
-    List<Skill> findAllByIdInAndCategoryIdAndProfileId(List<Long> ids, Long categoryId, Long profileId);
-    
+    List<Skill> findAllByIdInAndCategoryIdAndCategory_Profile_Id(List<Long> ids, Long categoryId, Long profileId);
+
     List<Skill> findAllByIdInAndCategory_ProfileId(List<Long> ids, Long profileId);
 }
