@@ -139,7 +139,7 @@ public class SkillServiceImpl implements SkillService {
             throw new ResourceNotFoundException("SkillCategory", "id", categoryId);
         }
 
-        return skillRepository.findAllByCategoryIdAndProfileId(categoryId, profileId)
+        return skillRepository.findAllByCategoryIdAndCategory_Profile_Id(categoryId, profileId)
                 .stream()
                 .map(skillMapper::toDto)
                 .toList();
@@ -180,7 +180,7 @@ public class SkillServiceImpl implements SkillService {
         }
 
         // Verificamos que todos los skills pertenezcan a esa categoría Y a ese perfil
-        Map<Long, Skill> skillMap = skillRepository.findAllByIdInAndCategoryIdAndProfileId(ids, categoryId, profileId)
+        Map<Long, Skill> skillMap = skillRepository.findAllByIdInAndCategoryIdAndCategory_Profile_Id(ids, categoryId, profileId)
                 .stream()
                 .collect(Collectors.toMap(Skill::getId, Function.identity()));
 
@@ -213,7 +213,7 @@ public class SkillServiceImpl implements SkillService {
         }
 
         // Obtenemos solo los skills que pertenecen al usuario, a la categoría y están en la lista
-        List<Skill> skillsToDelete = skillRepository.findAllByIdInAndCategoryIdAndProfileId(skillIds, categoryId, profileId);
+        List<Skill> skillsToDelete = skillRepository.findAllByIdInAndCategoryIdAndCategory_Profile_Id(skillIds, categoryId, profileId);
 
         if (skillsToDelete.isEmpty() && !skillIds.isEmpty()) {
             throw new ResourceNotFoundException("Ninguno de los Skills especificados se encontró o pertenece a la categoría/usuario.");
