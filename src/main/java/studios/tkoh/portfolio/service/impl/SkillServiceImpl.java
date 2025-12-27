@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import studios.tkoh.portfolio.dto.skill.GlobalSkillDto;
 import studios.tkoh.portfolio.dto.skill.SkillCategoryCreateRequest;
 import studios.tkoh.portfolio.dto.skill.SkillCategoryDto;
 import studios.tkoh.portfolio.dto.skill.SkillCategoryUpdateRequest;
@@ -18,9 +19,11 @@ import studios.tkoh.portfolio.dto.skill.SkillUpdateRequest;
 import studios.tkoh.portfolio.exception.ResourceNotFoundException;
 import studios.tkoh.portfolio.mapper.SkillCategoryMapper;
 import studios.tkoh.portfolio.mapper.SkillMapper;
+import studios.tkoh.portfolio.model.GlobalSkill;
 import studios.tkoh.portfolio.model.Profile;
 import studios.tkoh.portfolio.model.Skill;
 import studios.tkoh.portfolio.model.SkillCategory;
+import studios.tkoh.portfolio.repository.GlobalSkillRepo;
 import studios.tkoh.portfolio.repository.ProfileRepo;
 import studios.tkoh.portfolio.repository.SkillCategoryRepo;
 import studios.tkoh.portfolio.repository.SkillRepo;
@@ -37,6 +40,7 @@ public class SkillServiceImpl implements SkillService {
 
     private final SkillCategoryRepo categoryRepository;
     private final SkillRepo skillRepository;
+    private final GlobalSkillRepo globalSkillRepository;
     private final ProfileRepo profileRepository;
     private final SkillCategoryMapper categoryMapper;
     private final SkillMapper skillMapper;
@@ -88,7 +92,6 @@ public class SkillServiceImpl implements SkillService {
         Long profileId = getAuthenticatedUser().getProfileId();
         List<Long> ids = updateRequests.stream().map(SkillCategoryUpdateRequest::id).toList();
 
-        // Verificamos que todas las categorías pertenezcan al usuario
         Map<Long, SkillCategory> categoryMap = categoryRepository.findAllByIdInAndProfileId(ids, profileId)
                 .stream()
                 .collect(Collectors.toMap(SkillCategory::getId, Function.identity()));
@@ -117,15 +120,12 @@ public class SkillServiceImpl implements SkillService {
     public void batchDeleteCategories(List<Long> categoryIds) {
         Long profileId = getAuthenticatedUser().getProfileId();
 
-        // Obtenemos solo las que pertenecen al usuario
         List<SkillCategory> categoriesToDelete = categoryRepository.findAllByIdInAndProfileId(categoryIds, profileId);
 
         if (categoriesToDelete.isEmpty() && !categoryIds.isEmpty()) {
             throw new ResourceNotFoundException("Ninguna de las SkillCategories especificadas se encontró o pertenece al usuario.");
         }
 
-        // Esto eliminará las categorías y, gracias a CascadeType.ALL y orphanRemoval=true
-        // en la entidad SkillCategory, también eliminará todos los Skills anidados.
         categoryRepository.deleteAll(categoriesToDelete);
     }
 
@@ -150,14 +150,29 @@ public class SkillServiceImpl implements SkillService {
     public List<SkillDto> batchCreateSkills(Long categoryId, List<SkillCreateRequest> createRequests) {
         Long profileId = getAuthenticatedUser().getProfileId();
 
-        // Verificamos que la categoría padre pertenezca al usuario
         SkillCategory category = categoryRepository.findByIdAndProfileId(categoryId, profileId)
                 .orElseThrow(() -> new ResourceNotFoundException("SkillCategory", "id", categoryId));
 
         List<Skill> newSkills = createRequests.stream()
                 .map(req -> {
-                    Skill skill = skillMapper.toEntity(req);
-                    skill.setCategory(category); // Anidamos el skill a su categoría
+                    GlobalSkill globalSkill = globalSkillRepository.findByNameIgnoreCase(req.name())
+                            .orElseGet(() -> {
+                                GlobalSkill newGlobal = new GlobalSkill();
+                                newGlobal.setName(req.name());
+                                newGlobal.setIconUrl(req.icon());
+                                return globalSkillRepository.save(newGlobal);
+                            });
+
+                    Skill skill = new Skill();
+                    skill.setCategory(category);
+                    skill.setGlobalSkill(globalSkill);
+                    skill.setLevel(req.level());
+                    skill.setSortOrder(req.sortOrder());
+
+                    if (req.icon() != null && !req.icon().equals(globalSkill.getIconUrl())) {
+                        skill.setIcon(req.icon());
+                    }
+
                     return skill;
                 })
                 .toList();
@@ -174,32 +189,31 @@ public class SkillServiceImpl implements SkillService {
         Long profileId = getAuthenticatedUser().getProfileId();
         List<Long> ids = updateRequests.stream().map(SkillUpdateRequest::id).toList();
 
-        // Verificamos que la categoría padre pertenezca al usuario
         if (!categoryRepository.existsById(categoryId)) {
             throw new ResourceNotFoundException("SkillCategory", "id", categoryId);
         }
 
-        // Verificamos que todos los skills pertenezcan a esa categoría Y a ese perfil
         Map<Long, Skill> skillMap = skillRepository.findAllByIdInAndCategoryIdAndCategory_Profile_Id(ids, categoryId, profileId)
                 .stream()
                 .collect(Collectors.toMap(Skill::getId, Function.identity()));
 
         if (skillMap.size() != ids.size()) {
-            throw new ResourceNotFoundException("No se encontraron todos los Skills o no pertenecen a la categoría/usuario.");
+            throw new ResourceNotFoundException("Error al encontrar skills para actualizar");
         }
 
         List<Skill> updatedSkills = updateRequests.stream()
                 .map(req -> {
                     Skill skill = skillMap.get(req.id());
-                    skillMapper.updateFromDto(req, skill);
+                    skill.setLevel(req.level());
+                    skill.setSortOrder(req.sortOrder());
+                    if (req.icon() != null) {
+                        skill.setIcon(req.icon());
+                    }
                     return skill;
                 })
                 .toList();
 
-        List<Skill> savedSkills = skillRepository.saveAll(updatedSkills);
-        return savedSkills.stream()
-                .map(skillMapper::toDto)
-                .toList();
+        return skillRepository.saveAll(updatedSkills).stream().map(skillMapper::toDto).toList();
     }
 
     @Override
@@ -207,12 +221,10 @@ public class SkillServiceImpl implements SkillService {
     public void batchDeleteSkills(Long categoryId, List<Long> skillIds) {
         Long profileId = getAuthenticatedUser().getProfileId();
 
-        // Verificamos que la categoría padre pertenezca al usuario
         if (!categoryRepository.existsById(categoryId)) {
             throw new ResourceNotFoundException("SkillCategory", "id", categoryId);
         }
 
-        // Obtenemos solo los skills que pertenecen al usuario, a la categoría y están en la lista
         List<Skill> skillsToDelete = skillRepository.findAllByIdInAndCategoryIdAndCategory_Profile_Id(skillIds, categoryId, profileId);
 
         if (skillsToDelete.isEmpty() && !skillIds.isEmpty()) {
@@ -220,6 +232,16 @@ public class SkillServiceImpl implements SkillService {
         }
 
         skillRepository.deleteAll(skillsToDelete);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<GlobalSkillDto> searchGlobalSkills(String query) {
+        return globalSkillRepository.findByNameContainingIgnoreCaseOrderByNameAsc(query)
+                .stream()
+                .map(gs -> new GlobalSkillDto(gs.getId(), gs.getName(), gs.getIconUrl()))
+                .limit(20)
+                .toList();
     }
 
     // --- Helper ---
