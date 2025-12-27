@@ -37,8 +37,9 @@ public class Skill extends BaseEntity implements Serializable {
     @ToString.Exclude
     private SkillCategory category;
 
-    @Column(nullable = false, length = 80)
-    private String name;
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @JoinColumn(name = "global_skill_id", nullable = false, referencedColumnName = "id")
+    private GlobalSkill globalSkill;
 
     private short level;
 
@@ -46,4 +47,15 @@ public class Skill extends BaseEntity implements Serializable {
     private String icon;
 
     private int sortOrder;
+
+    public String getName() {
+        return globalSkill != null ? globalSkill.getName() : "";
+    }
+
+    public String getResolvedIconUrl() {
+        if (this.icon != null && !this.icon.isBlank()) {
+            return this.icon;
+        }
+        return globalSkill != null ? globalSkill.getIconUrl() : null;
+    }
 }
