@@ -17,13 +17,19 @@ import studios.tkoh.portfolio.model.Skill;
 @Mapper(componentModel = "spring")
 public interface SkillMapper {
 
+    @Mapping(target = "name", expression = "java(skill.getName())")
+    @Mapping(target = "icon", expression = "java(skill.getResolvedIconUrl())")
+    @Mapping(target = "globalSkillId", source = "globalSkill.id")
     SkillDto toDto(Skill skill);
 
     @Mapping(target = "category", ignore = true)
+    @Mapping(target = "globalSkill", ignore = true)
+    @Mapping(target = "id", ignore = true)
     Skill toEntity(SkillCreateRequest request);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "category", ignore = true)
+    @Mapping(target = "globalSkill", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateFromDto(SkillUpdateRequest dto, @MappingTarget Skill entity);
 }
