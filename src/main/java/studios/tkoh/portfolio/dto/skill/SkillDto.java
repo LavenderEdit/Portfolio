@@ -7,6 +7,7 @@ package studios.tkoh.portfolio.dto.skill;
 public record SkillDto(
         Long id,
         String name,
+        Long globalSkillId,
         short level,
         String icon) {
 
