@@ -1,6 +1,7 @@
 package studios.tkoh.portfolio.service;
 
 import java.util.List;
+import studios.tkoh.portfolio.dto.skill.GlobalSkillDto;
 import studios.tkoh.portfolio.dto.skill.SkillCategoryCreateRequest;
 import studios.tkoh.portfolio.dto.skill.SkillCategoryDto;
 import studios.tkoh.portfolio.dto.skill.SkillCategoryUpdateRequest;
@@ -31,6 +32,8 @@ public interface SkillService {
     List<SkillDto> batchCreateSkills(Long categoryId, List<SkillCreateRequest> createRequests);
 
     List<SkillDto> batchUpdateSkills(Long categoryId, List<SkillUpdateRequest> updateRequests);
+
+    List<GlobalSkillDto> searchGlobalSkills(String query);
 
     void batchDeleteSkills(Long categoryId, List<Long> skillIds);
 }
