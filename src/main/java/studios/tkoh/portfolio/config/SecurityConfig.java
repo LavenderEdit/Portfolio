@@ -66,7 +66,12 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
 
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Cache-Control"));
+        configuration.setAllowedHeaders(List.of(
+                "Authorization",
+                "Content-Type",
+                "Cache-Control",
+                "ngrok-skip-browser-warning"
+        ));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
