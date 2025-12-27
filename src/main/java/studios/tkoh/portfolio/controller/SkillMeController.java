@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import studios.tkoh.portfolio.dto.response.ApiResponse;
 import studios.tkoh.portfolio.dto.skill.BatchDeleteRequest;
+import studios.tkoh.portfolio.dto.skill.GlobalSkillDto;
 import studios.tkoh.portfolio.dto.skill.SkillCategoryCreateRequest;
 import studios.tkoh.portfolio.dto.skill.SkillCategoryDto;
 import studios.tkoh.portfolio.dto.skill.SkillCategoryUpdateRequest;
@@ -39,6 +41,12 @@ public class SkillMeController {
     public ResponseEntity<ApiResponse<List<SkillCategoryDto>>> getAllCategories() {
         List<SkillCategoryDto> categories = skillService.getAllCategories();
         return ResponseEntity.ok(ApiResponse.ok("Categorías de skills obtenidas", categories));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<List<GlobalSkillDto>>> searchSkills(@RequestParam String query) {
+        List<GlobalSkillDto> results = skillService.searchGlobalSkills(query);
+        return ResponseEntity.ok(ApiResponse.ok("Resultados de búsqueda", results));
     }
 
     @GetMapping("/{categoryId}")
