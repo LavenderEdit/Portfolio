@@ -94,7 +94,7 @@ public class PublicPortfolioServiceImpl implements PublicPortfolioService {
         return new PortfolioDetailDto(
                 dto.slug(), dto.fullName(), dto.headline(), dto.bio(),
                 dto.contactEmail(), dto.location(), dto.avatarUrl(), dto.resumeUrl(),
-                dto.isTkohCollaborator(),
+                dto.tkohCollab(),
                 socialLinks, skillCategories, projects, experiences, education,
                 certificates
         );

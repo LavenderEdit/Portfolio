@@ -21,8 +21,10 @@ public interface PublicPortfolioMapper {
     @Mapping(target = "experiences", ignore = true)
     @Mapping(target = "education", ignore = true)
     @Mapping(target = "certificates", ignore = true)
+    @Mapping(target = "tkohCollab", source = "tkohCollaborator")
     PortfolioDetailDto profileToDetailDto(Profile profile);
 
+    @Mapping(target = "tkohCollab", source = "tkohCollaborator")
     PortfolioPublicDto profileToPublicDto(Profile profile);
 
     @Mapping(source = "coverImage", target = "coverImage")

@@ -9,6 +9,6 @@ public record PortfolioPublicDto(
         String fullName,
         String headline,
         String avatarUrl,
-        boolean isTkohCollaborator) {
+        boolean tkohCollab) {
 
 }

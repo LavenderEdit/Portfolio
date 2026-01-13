@@ -20,7 +20,7 @@ public record PortfolioDetailDto(
         String location,
         String avatarUrl,
         String resumeUrl,
-        boolean isTkohCollaborator,
+        boolean tkohCollab,
         List<SocialLinkDto> socialLinks,
         List<SkillCategoryDto> skillCategories,
         List<ProjectSummaryDto> projects,
