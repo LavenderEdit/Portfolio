@@ -2,6 +2,9 @@ package studios.tkoh.portfolio.service.impl;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +45,8 @@ import studios.tkoh.portfolio.service.PublicPortfolioService;
 @Transactional(readOnly = true)
 public class PublicPortfolioServiceImpl implements PublicPortfolioService {
 
+    private static final String PUBLISHED = "PUBLISHED";
+
     private final ProfileRepo profileRepository;
     private final SocialLinkRepo socialLinkRepository;
     private final SkillCategoryRepo skillCategoryRepository;
@@ -59,16 +64,17 @@ public class PublicPortfolioServiceImpl implements PublicPortfolioService {
     private final CertificateMapper certificateMapper;
 
     @Override
-    public List<PortfolioPublicDto> getAllPublicProfiles() {
-        return profileRepository.findAll(Sort.by("fullName").ascending())
-                .stream()
-                .map(publicMapper::profileToPublicDto)
-                .toList();
+    public Page<PortfolioPublicDto> getAllPublicProfiles(Pageable pageable) {
+        Pageable safePageable = pageable.getSort().isSorted()
+                ? pageable
+                : PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("fullName").ascending());
+        return profileRepository.findAllByPortfolioStatus(PUBLISHED, safePageable)
+                .map(publicMapper::profileToPublicDto);
     }
 
     @Override
     public PortfolioDetailDto getFullPortfolioBySlug(String slug) {
-        Profile profile = profileRepository.findBySlug(slug)
+        Profile profile = profileRepository.findBySlugAndPortfolioStatus(slug, PUBLISHED)
                 .orElseThrow(() -> new ResourceNotFoundException("Portfolio", "slug", slug));
 
         PortfolioDetailDto dto = publicMapper.profileToDetailDto(profile);
@@ -79,7 +85,7 @@ public class PublicPortfolioServiceImpl implements PublicPortfolioService {
         List<SkillCategoryDto> skillCategories = skillCategoryRepository.findAllByProfileSlugOrderBySortOrderAsc(slug)
                 .stream().map(skillCategoryMapper::toDto).toList();
 
-        List<ProjectSummaryDto> projects = projectRepository.findAllByProfileSlugOrderByFeaturedDescSortOrderAsc(slug)
+        List<ProjectSummaryDto> projects = projectRepository.findAllByProfileSlugAndProjectStatusOrderByFeaturedDescSortOrderAsc(slug, PUBLISHED)
                 .stream().map(publicMapper::projectToSummaryDto).toList();
 
         List<ExperienceDto> experiences = experienceRepository.findAllByProfileSlugOrderByStartDateDesc(slug)
@@ -102,7 +108,8 @@ public class PublicPortfolioServiceImpl implements PublicPortfolioService {
 
     @Override
     public ProjectDto getPublicProjectBySlugs(String profileSlug, String projectSlug) {
-        Project project = projectRepository.findByProfileSlugAndSlug(profileSlug, projectSlug)
+        Project project = projectRepository.findByProfileSlugAndProfilePortfolioStatusAndSlugAndProjectStatus(
+                profileSlug, PUBLISHED, projectSlug, PUBLISHED)
                 .orElseThrow(() -> new ResourceNotFoundException("Project", "slug", projectSlug));
 
         return projectMapper.toDto(project);
