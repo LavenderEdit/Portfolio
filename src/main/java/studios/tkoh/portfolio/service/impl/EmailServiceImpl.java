@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import studios.tkoh.portfolio.model.ContactMessage;
 import studios.tkoh.portfolio.model.Profile;
+import studios.tkoh.portfolio.model.User;
 import studios.tkoh.portfolio.service.EmailService;
 
 /**
@@ -55,6 +56,30 @@ public class EmailServiceImpl implements EmailService {
 
         } catch (MailException e) {
             log.error("Error al enviar email de contacto a {}: {}", recipientProfile.getContactEmail(), e.getMessage(), e);
+        }
+    }
+
+    @Async
+    @Override
+    public void sendEmailVerification(User user, String verificationUrl) {
+        try {
+            SimpleMailMessage mail = new SimpleMailMessage();
+            mail.setFrom(fromEmail);
+            mail.setTo(user.getEmail());
+            mail.setSubject("Verifica tu correo en Portfolio Hub");
+            mail.setText("""
+                         Hola,
+
+                         Confirma tu correo para activar tu cuenta en Portfolio Hub:
+
+                         %s
+
+                         Si no creaste esta cuenta, ignora este mensaje.
+                         """.formatted(verificationUrl));
+            mailSender.send(mail);
+            log.info("Email de verificacion enviado a userId={}", user.getId());
+        } catch (MailException e) {
+            log.error("No se pudo enviar email de verificacion a userId={}: {}", user.getId(), e.getMessage());
         }
     }
 }
