@@ -357,7 +357,7 @@ http://localhost:8080/actuator/health
 
 | Método | Endpoint | Descripción |
 |---|---|---|
-| GET | `/api/portfolios` | Listado paginado de portafolios publicados |
+| GET | `/api/portfolios` | Listado paginado de portafolios publicados (soporta parámetro opcional `search` para filtrar por nombre completo) |
 | GET | `/api/portfolios/{slug}` | Detalle público de portafolio |
 | GET | `/api/portfolios/{profileSlug}/projects` | Proyectos publicados |
 | GET | `/api/portfolios/{profileSlug}/projects/{projectSlug}` | Detalle de proyecto |
