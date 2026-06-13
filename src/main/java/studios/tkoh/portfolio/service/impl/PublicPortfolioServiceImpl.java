@@ -64,12 +64,18 @@ public class PublicPortfolioServiceImpl implements PublicPortfolioService {
     private final CertificateMapper certificateMapper;
 
     @Override
-    public Page<PortfolioPublicDto> getAllPublicProfiles(Pageable pageable) {
+    public Page<PortfolioPublicDto> getAllPublicProfiles(String search, Pageable pageable) {
         Pageable safePageable = pageable.getSort().isSorted()
                 ? pageable
                 : PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("fullName").ascending());
-        return profileRepository.findAllByPortfolioStatus(PUBLISHED, safePageable)
-                .map(publicMapper::profileToPublicDto);
+        Page<Profile> profilePage;
+        if (search == null || search.trim().isEmpty()) {
+            profilePage = profileRepository.findAllByPortfolioStatus(PUBLISHED, safePageable);
+        } else {
+            profilePage = profileRepository.findAllByPortfolioStatusAndFullNameContainingIgnoreCase(
+                    PUBLISHED, search.trim(), safePageable);
+        }
+        return profilePage.map(publicMapper::profileToPublicDto);
     }
 
     @Override
