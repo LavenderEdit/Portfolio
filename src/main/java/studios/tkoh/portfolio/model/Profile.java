@@ -67,4 +67,16 @@ public class Profile extends BaseEntity implements Serializable {
 
     @Column(name = "is_tkoh_collaborator", nullable = false)
     private boolean tkohCollaborator = false;
+
+    @Column(name = "portfolio_status", nullable = false, length = 30)
+    private String portfolioStatus = "PUBLISHED";
+
+    @Column(name = "meta_title", length = 160)
+    private String metaTitle;
+
+    @Column(name = "meta_description", length = 300)
+    private String metaDescription;
+
+    @Column(name = "og_image")
+    private String ogImage;
 }
