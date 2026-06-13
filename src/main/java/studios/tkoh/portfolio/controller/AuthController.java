@@ -15,10 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 import studios.tkoh.portfolio.dto.auth.AuthResponse;
 import studios.tkoh.portfolio.dto.auth.LoginRequest;
 import studios.tkoh.portfolio.dto.auth.RegisterRequest;
+import studios.tkoh.portfolio.dto.auth.ResendVerificationRequest;
+import studios.tkoh.portfolio.dto.auth.VerifyEmailRequest;
 import studios.tkoh.portfolio.dto.response.ApiResponse;
 import studios.tkoh.portfolio.security.AuthCookieService;
 import studios.tkoh.portfolio.security.JwtService;
 import studios.tkoh.portfolio.service.AuthService;
+import studios.tkoh.portfolio.service.EmailVerificationService;
 
 /**
  *
@@ -32,6 +35,7 @@ public class AuthController {
     private final AuthService authenticationService;
     private final AuthCookieService authCookieService;
     private final JwtService jwtService;
+    private final EmailVerificationService emailVerificationService;
 
     @Value("${application.security.jwt.refresh-expiration-days:7}")
     private long refreshExpirationDays;
@@ -91,6 +95,18 @@ public class AuthController {
         }
         clearAuthCookies(httpResponse);
         return ResponseEntity.ok(ApiResponse.ok("Sesiones cerradas"));
+    }
+
+    @PostMapping("/verify-email")
+    public ResponseEntity<ApiResponse<Void>> verifyEmail(@Valid @RequestBody VerifyEmailRequest request) {
+        emailVerificationService.verifyEmail(request.token());
+        return ResponseEntity.ok(ApiResponse.ok("Correo verificado exitosamente"));
+    }
+
+    @PostMapping("/resend-verification")
+    public ResponseEntity<ApiResponse<Void>> resendVerification(@Valid @RequestBody ResendVerificationRequest request) {
+        emailVerificationService.resendVerification(request.email());
+        return ResponseEntity.ok(ApiResponse.ok("Si la cuenta existe y requiere verificacion, enviaremos un correo"));
     }
 
     private void addAuthCookies(HttpServletResponse response, AuthResponse authResponse) {
