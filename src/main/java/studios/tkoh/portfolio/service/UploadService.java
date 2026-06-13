@@ -7,6 +7,7 @@ import studios.tkoh.portfolio.dto.certificate.CertificateDto;
 import studios.tkoh.portfolio.dto.profile.ProfileDto;
 import studios.tkoh.portfolio.dto.project.ProjectDto;
 import studios.tkoh.portfolio.dto.skill.SkillDto;
+import studios.tkoh.portfolio.dto.upload.StoredFileDownload;
 
 /**
  *
@@ -23,4 +24,6 @@ public interface UploadService {
     SkillDto uploadSkillIcon(Long skillId, MultipartFile file) throws IOException, GeneralSecurityException;
 
     CertificateDto uploadCertificateFile(Long certificateId, MultipartFile file) throws IOException, GeneralSecurityException;
+
+    StoredFileDownload downloadPrivateFile(Long storedFileId) throws IOException, GeneralSecurityException;
 }
