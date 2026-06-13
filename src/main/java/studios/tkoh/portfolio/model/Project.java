@@ -74,6 +74,18 @@ public class Project extends BaseEntity implements Serializable {
 
     private int sortOrder;
 
+    @Column(name = "project_status", nullable = false, length = 30)
+    private String projectStatus = "PUBLISHED";
+
+    @Column(name = "meta_title", length = 160)
+    private String metaTitle;
+
+    @Column(name = "meta_description", length = 300)
+    private String metaDescription;
+
+    @Column(name = "og_image")
+    private String ogImage;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "project_skill",
             joinColumns = @JoinColumn(name = "project_id", referencedColumnName = "id"),
