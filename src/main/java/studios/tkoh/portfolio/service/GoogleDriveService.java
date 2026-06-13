@@ -14,5 +14,10 @@ public interface GoogleDriveService {
     UploadResponse uploadFile(MultipartFile file, String folderId, String uniqueFilename)
             throws IOException, GeneralSecurityException;
 
+    UploadResponse uploadFile(MultipartFile file, String folderId, String uniqueFilename, boolean publiclyReadable)
+            throws IOException, GeneralSecurityException;
+
     String getPublicViewUrl(String fileId);
+
+    byte[] downloadFile(String fileId) throws IOException, GeneralSecurityException;
 }
