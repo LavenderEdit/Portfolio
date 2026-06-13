@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -44,11 +45,21 @@ public class User extends BaseEntity implements Serializable, UserDetails {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String password;
 
     @Column(nullable = false)
     private String roles;
+
+    @Column(name = "email_verified", nullable = false)
+    private boolean emailVerified;
+
+    @Column(name = "email_verified_at")
+    private Instant emailVerifiedAt;
+
+    @Column(name = "account_status", nullable = false, length = 30)
+    @Builder.Default
+    private String accountStatus = "ACTIVE";
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
@@ -87,6 +98,6 @@ public class User extends BaseEntity implements Serializable, UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return "ACTIVE".equals(this.accountStatus);
     }
 }

@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 import studios.tkoh.portfolio.dto.profile.ContactEmailUpdateRequest;
 import studios.tkoh.portfolio.dto.profile.ProfileDto;
 import studios.tkoh.portfolio.dto.profile.ProfileUpdateRequest;
+import studios.tkoh.portfolio.dto.auth.VerificationStatusResponse;
 import studios.tkoh.portfolio.dto.response.ApiResponse;
 import studios.tkoh.portfolio.security.CustomUserDetails;
+import studios.tkoh.portfolio.service.EmailVerificationService;
 import studios.tkoh.portfolio.service.ProfileService;
 
 /**
@@ -26,6 +28,7 @@ import studios.tkoh.portfolio.service.ProfileService;
 public class MeController {
 
     private final ProfileService profileService;
+    private final EmailVerificationService emailVerificationService;
 
     @GetMapping("/profile")
     public ResponseEntity<ApiResponse<ProfileDto>> getMyProfile(Authentication authentication) {
@@ -61,5 +64,11 @@ public class MeController {
         ProfileDto updatedDto = profileService.updateContactEmail(profileId, request.email());
 
         return ResponseEntity.ok(ApiResponse.ok("Email de contacto actualizado exitosamente", updatedDto));
+    }
+
+    @GetMapping("/verification-status")
+    public ResponseEntity<ApiResponse<VerificationStatusResponse>> verificationStatus(Authentication authentication) {
+        VerificationStatusResponse status = emailVerificationService.status(authentication.getName());
+        return ResponseEntity.ok(ApiResponse.ok("Estado de verificacion obtenido", status));
     }
 }

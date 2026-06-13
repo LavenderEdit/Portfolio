@@ -1,6 +1,7 @@
 package studios.tkoh.portfolio.service;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import studios.tkoh.portfolio.dto.project.ProjectDto;
 import studios.tkoh.portfolio.dto.publicapi.PortfolioDetailDto;
 import studios.tkoh.portfolio.dto.publicapi.PortfolioPublicDto;
@@ -11,7 +12,7 @@ import studios.tkoh.portfolio.dto.publicapi.PortfolioPublicDto;
  */
 public interface PublicPortfolioService {
 
-    List<PortfolioPublicDto> getAllPublicProfiles();
+    Page<PortfolioPublicDto> getAllPublicProfiles(Pageable pageable);
 
     PortfolioDetailDto getFullPortfolioBySlug(String slug);
 
