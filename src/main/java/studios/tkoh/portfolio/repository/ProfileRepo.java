@@ -20,5 +20,7 @@ public interface ProfileRepo extends JpaRepository<Profile, Long> {
 
     Page<Profile> findAllByPortfolioStatus(String portfolioStatus, Pageable pageable);
 
+    Page<Profile> findAllByPortfolioStatusAndFullNameContainingIgnoreCase(String portfolioStatus, String search, Pageable pageable);
+
     boolean existsBySlug(String slug);
 }
