@@ -18,7 +18,14 @@ public interface ProjectRepo extends JpaRepository<Project, Long> {
     Optional<Project> findByProfileSlugAndSlug(String profileSlug, String slug);
 
     @EntityGraph(attributePaths = "skills")
+    Optional<Project> findByProfileSlugAndProfilePortfolioStatusAndSlugAndProjectStatus(
+            String profileSlug, String portfolioStatus, String slug, String projectStatus);
+
+    @EntityGraph(attributePaths = "skills")
     List<Project> findAllByProfileSlugOrderByFeaturedDescSortOrderAsc(String profileSlug);
+
+    @EntityGraph(attributePaths = "skills")
+    List<Project> findAllByProfileSlugAndProjectStatusOrderByFeaturedDescSortOrderAsc(String profileSlug, String projectStatus);
 
     @EntityGraph(attributePaths = "skills")
     Optional<Project> findByIdAndProfileId(Long id, Long profileId);
