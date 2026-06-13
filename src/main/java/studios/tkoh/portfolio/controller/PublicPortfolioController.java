@@ -1,8 +1,10 @@
 package studios.tkoh.portfolio.controller;
 
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,10 +25,6 @@ import studios.tkoh.portfolio.repository.ProfileRepo;
 import studios.tkoh.portfolio.service.EmailService;
 import studios.tkoh.portfolio.service.PublicPortfolioService;
 
-/**
- *
- * @author Studios TKOH!
- */
 @RestController
 @RequestMapping("/api/portfolios")
 @RequiredArgsConstructor
@@ -38,9 +36,10 @@ public class PublicPortfolioController {
     private final EmailService emailService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<PortfolioPublicDto>>> getAllPortfolios() {
-        List<PortfolioPublicDto> portfolios = publicPortfolioService.getAllPublicProfiles();
-        return ResponseEntity.ok(ApiResponse.ok("Portafolios públicos obtenidos", portfolios));
+    public ResponseEntity<ApiResponse<Page<PortfolioPublicDto>>> getAllPortfolios(
+            @PageableDefault(size = 20) Pageable pageable) {
+        Page<PortfolioPublicDto> portfolios = publicPortfolioService.getAllPublicProfiles(pageable);
+        return ResponseEntity.ok(ApiResponse.ok("Portafolios publicos obtenidos", portfolios));
     }
 
     @GetMapping("/{slug}")
@@ -62,7 +61,7 @@ public class PublicPortfolioController {
             @PathVariable String slug,
             @Valid @RequestBody ContactRequest contactRequest) {
 
-        Profile profile = profileRepository.findBySlug(slug)
+        Profile profile = profileRepository.findBySlugAndPortfolioStatus(slug, "PUBLISHED")
                 .orElseThrow(() -> new ResourceNotFoundException("Profile", "slug", slug));
 
         ContactMessage message = new ContactMessage();
@@ -77,6 +76,4 @@ public class PublicPortfolioController {
 
         return ResponseEntity.ok(ApiResponse.ok("Mensaje enviado exitosamente"));
     }
-
-    // Aquí irán los otros endpoints públicos (GET /api/portfolios, GET /api/portfolios/{slug}, etc.)
 }
