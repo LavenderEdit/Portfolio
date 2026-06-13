@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import studios.tkoh.portfolio.dto.response.ApiResponse;
 import studios.tkoh.portfolio.security.RequestIdFilter;
 
@@ -29,6 +31,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleIllegalStateException(IllegalStateException ex, WebRequest request) {
         ApiResponse<Void> apiResponse = error("CONFLICT", ex.getMessage(), request);
         return new ResponseEntity<>(apiResponse, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse<Void>> handleIllegalArgumentException(IllegalArgumentException ex, WebRequest request) {
+        ApiResponse<Void> apiResponse = error("BAD_REQUEST", ex.getMessage(), request);
+        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
@@ -46,6 +54,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handleResourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
         ApiResponse<Void> apiResponse = error("RESOURCE_NOT_FOUND", ex.getMessage(), request);
+        return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler({NoResourceFoundException.class, NoHandlerFoundException.class})
+    public ResponseEntity<ApiResponse<Void>> handleFrameworkNotFoundException(Exception ex, WebRequest request) {
+        ApiResponse<Void> apiResponse = error("RESOURCE_NOT_FOUND", "Recurso no encontrado", request);
         return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
     }
 
