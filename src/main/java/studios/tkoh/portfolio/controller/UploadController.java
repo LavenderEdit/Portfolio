@@ -35,7 +35,7 @@ public class UploadController {
             ProfileDto updatedProfile = uploadService.uploadAvatar(file);
             return ResponseEntity.ok(ApiResponse.ok("Avatar actualizado exitosamente", updatedProfile));
         } catch (IOException | GeneralSecurityException e) {
-            return new ResponseEntity<>(ApiResponse.error("Error al subir avatar: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ApiResponse.error("UPLOAD_ERROR", "Error al subir avatar", "/api/me/upload/avatar", null), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -45,7 +45,7 @@ public class UploadController {
             ProfileDto updatedProfile = uploadService.uploadResume(file);
             return ResponseEntity.ok(ApiResponse.ok("Currículum actualizado exitosamente", updatedProfile));
         } catch (IOException | GeneralSecurityException e) {
-            return new ResponseEntity<>(ApiResponse.error("Error al subir currículum: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ApiResponse.error("UPLOAD_ERROR", "Error al subir curriculum", "/api/me/upload/resume", null), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -57,7 +57,7 @@ public class UploadController {
             ProjectDto updatedProject = uploadService.uploadProjectCover(projectId, file);
             return ResponseEntity.ok(ApiResponse.ok("Portada de proyecto actualizada", updatedProject));
         } catch (IOException | GeneralSecurityException e) {
-            return new ResponseEntity<>(ApiResponse.error("Error al subir portada: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ApiResponse.error("UPLOAD_ERROR", "Error al subir portada", "/api/me/upload/project/" + projectId + "/cover", null), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -69,7 +69,7 @@ public class UploadController {
             SkillDto updatedSkill = uploadService.uploadSkillIcon(skillId, file);
             return ResponseEntity.ok(ApiResponse.ok("Icono de skill actualizado", updatedSkill));
         } catch (IOException | GeneralSecurityException e) {
-            return new ResponseEntity<>(ApiResponse.error("Error al subir icono: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ApiResponse.error("UPLOAD_ERROR", "Error al subir icono", "/api/me/upload/skill/" + skillId + "/icon", null), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -81,7 +81,7 @@ public class UploadController {
             CertificateDto updatedCertificate = uploadService.uploadCertificateFile(certificateId, file);
             return ResponseEntity.ok(ApiResponse.ok("Archivo de certificado subido", updatedCertificate));
         } catch (IOException | GeneralSecurityException e) {
-            return new ResponseEntity<>(ApiResponse.error("Error al subir archivo: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ApiResponse.error("UPLOAD_ERROR", "Error al subir archivo", "/api/me/upload/certificate/" + certificateId + "/file", null), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
