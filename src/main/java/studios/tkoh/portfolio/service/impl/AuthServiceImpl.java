@@ -1,9 +1,6 @@
 package studios.tkoh.portfolio.service.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.security.SecureRandom;
-import java.time.Clock;
-import java.util.Base64;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,15 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 import studios.tkoh.portfolio.dto.auth.AuthResponse;
 import studios.tkoh.portfolio.dto.auth.LoginRequest;
 import studios.tkoh.portfolio.dto.auth.RegisterRequest;
-import studios.tkoh.portfolio.model.EmailVerificationToken;
 import studios.tkoh.portfolio.model.Profile;
 import studios.tkoh.portfolio.model.User;
-import studios.tkoh.portfolio.repository.EmailVerificationTokenRepository;
 import studios.tkoh.portfolio.repository.ProfileRepo;
 import studios.tkoh.portfolio.repository.UserRepository;
 import studios.tkoh.portfolio.security.AuthSessionService;
-import studios.tkoh.portfolio.security.RefreshTokenService;
 import studios.tkoh.portfolio.service.AuthService;
+import studios.tkoh.portfolio.service.EmailVerificationService;
 
 /**
  *
@@ -36,10 +31,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final AuthSessionService authSessionService;
-    private final EmailVerificationTokenRepository emailVerificationTokenRepository;
-    private final RefreshTokenService refreshTokenService;
-    private final Clock clock;
-    private final SecureRandom secureRandom = new SecureRandom();
+    private final EmailVerificationService emailVerificationService;
 
     @Override
     @Transactional
@@ -72,7 +64,7 @@ public class AuthServiceImpl implements AuthService {
         user.setProfile(profile);
 
         User savedUser = userRepository.save(user);
-        createEmailVerificationToken(savedUser);
+        emailVerificationService.createAndSendVerification(savedUser);
 
         return authSessionService.createSession(savedUser.getEmail(), httpRequest);
     }
@@ -114,17 +106,4 @@ public class AuthServiceImpl implements AuthService {
         return slug;
     }
 
-    private void createEmailVerificationToken(User user) {
-        byte[] bytes = new byte[48];
-        secureRandom.nextBytes(bytes);
-        String rawToken = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
-
-        EmailVerificationToken token = new EmailVerificationToken();
-        token.setUser(user);
-        token.setTokenHash(refreshTokenService.hash(rawToken));
-        token.setCreatedAt(clock.instant());
-        token.setExpiresAt(clock.instant().plusSeconds(24 * 60 * 60));
-        token.setResendCount(0);
-        emailVerificationTokenRepository.save(token);
-    }
 }
