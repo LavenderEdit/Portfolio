@@ -13,6 +13,9 @@ public class ApiResponse<T> {
     private String message;
     private T data;
     private Instant timestamp;
+    private String errorCode;
+    private String path;
+    private String requestId;
 
     public ApiResponse() {
         this.timestamp = Instant.now();
@@ -22,6 +25,16 @@ public class ApiResponse<T> {
         this.success = success;
         this.message = message;
         this.data = data;
+        this.timestamp = Instant.now();
+    }
+
+    public ApiResponse(boolean success, String message, T data, String errorCode, String path, String requestId) {
+        this.success = success;
+        this.message = message;
+        this.data = data;
+        this.errorCode = errorCode;
+        this.path = path;
+        this.requestId = requestId;
         this.timestamp = Instant.now();
     }
 
@@ -39,6 +52,10 @@ public class ApiResponse<T> {
 
     public static <T> ApiResponse<T> error(String message) {
         return new ApiResponse<>(false, message, null);
+    }
+
+    public static <T> ApiResponse<T> error(String errorCode, String message, String path, String requestId) {
+        return new ApiResponse<>(false, message, null, errorCode, path, requestId);
     }
 
     // getters y setters
@@ -72,5 +89,29 @@ public class ApiResponse<T> {
 
     public void setTimestamp(Instant timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getErrorCode() {
+        return errorCode;
+    }
+
+    public void setErrorCode(String errorCode) {
+        this.errorCode = errorCode;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
     }
 }
