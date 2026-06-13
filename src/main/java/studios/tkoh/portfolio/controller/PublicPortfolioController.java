@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import studios.tkoh.portfolio.dto.project.ProjectDto;
 import studios.tkoh.portfolio.dto.publicapi.ContactRequest;
@@ -37,9 +38,10 @@ public class PublicPortfolioController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<Page<PortfolioPublicDto>>> getAllPortfolios(
+            @RequestParam(required = false) String search,
             @PageableDefault(size = 20) Pageable pageable) {
-        Page<PortfolioPublicDto> portfolios = publicPortfolioService.getAllPublicProfiles(pageable);
-        return ResponseEntity.ok(ApiResponse.ok("Portafolios publicos obtenidos", portfolios));
+        Page<PortfolioPublicDto> portfolios = publicPortfolioService.getAllPublicProfiles(search, pageable);
+        return ResponseEntity.ok(ApiResponse.ok("Portafolios públicos obtenidos", portfolios));
     }
 
     @GetMapping("/{slug}")
