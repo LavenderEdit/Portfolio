@@ -1,187 +1,422 @@
 <p align="center">
-  <a href="https://endearing-blini-6a6b91.netlify.app/" target="_blank">
     <img src="https://drive.google.com/uc?export=view&id=1TuT30CiBkinh85WuTvjKGKN47hCyCS0Z" width="300" alt="Studios TKOH Logo">
-  </a>
 </p>
 
-# 🌐 Portfolio Hub API (Spring Boot)
+# Portfolio Hub API
 
-Full-Stack REST API built with **Spring Boot 3**, **Spring Security (JWT)**, and **Spring Data JPA** to manage and expose multiple professional portfolios.
+**Multi-user REST API** built with **Spring Boot 4**, **Spring Security**, **secure JWT cookies**, **MySQL**, **Flyway**, and the **Google Drive API** to create, manage, and publish professional portfolio hubs.
 
-[🇪🇸 Versión en Español ¡AQUI!](README.md)
-
----
-
-## 🚀 Core Features
-
-### 🔒 Secure API (Backend)
-All business logic, security, and data access reside in this project.
-
-### 🔑 JWT Authentication
-Registration and login (`/api/auth`) generate a **JSON Web Token** to secure endpoints.
-
-### 🧑‍💼 Portfolio Management
-Private endpoints (`/api/me/**`) for authenticated users to **Create**, **Read**, **Update**, and **Delete (CRUD)** all aspects of their portfolio:
-
-- Profile  
-- Experience  
-- Education  
-- Social Links  
-- Certificates  
-- Projects  
-- Skills (by Category)
-
-### 🌍 Public API
-Public endpoints (`/api/portfolios/**`) allow any client to view portfolio data:
-- List of profiles
-- Full profile detail
-- Project detail
-
-### ☁️ Google Drive File Management
-Full integration to upload files (avatars, resumes, project covers, icons) to **Google Drive** via its API, saving only the **public URL** in the database.
-
-### 📧 Email Notifications
-Email sending (e.g., contact form submissions) via **Spring Mail**.
-
-### 🗄️ Database & Migrations
-Uses **MySQL** with **Flyway** for versioned schema management.
+[Version en Espanol aqui](README.md)
 
 ---
 
-## 🧩 Technology Stack
+## Overview
+
+Portfolio Hub API is the backend for a professional portfolio platform. Each user can manage their profile, work experience, education, projects, certificates, social links, skills, and related files.
+
+The project is prepared to run with **Docker as the main local production mode**, exposing the API on `localhost:8080`. It can sit behind an external HTTPS tunnel or reverse proxy without adding Cloudflare-specific dependencies to the repository.
+
+---
+
+## Core Features
+
+### Authentication and Security
+
+- Email/password registration and login.
+- JWT access tokens and refresh tokens.
+- Configurable `HttpOnly`, `Secure`, and `SameSite` cookies.
+- Temporary compatibility with `Authorization: Bearer`.
+- Rotating refresh tokens with revocation support.
+- Single-session logout and global logout.
+- CSRF protection for cookie-based flows.
+- Initial rate limiting for sensitive endpoints.
+- Security headers.
+- Standard error responses with `requestId`.
+
+### Email Verification
+
+- Email verification with hashed tokens.
+- Generic resend responses to avoid email enumeration.
+- Private endpoint for checking verification status.
+- Prepared to block sensitive actions when `emailVerified=false`.
+
+### Google OAuth2
+
+- Google OAuth2 login.
+- Secure external identity linking.
+- Verified-email matching when appropriate.
+- Same internal session cookie model as email/password login.
+- Redirects restricted by an allow-list.
+
+### Portfolio Management
+
+Private endpoints under `/api/me/**` allow authenticated users to manage:
+
+- Professional profile.
+- Work experience.
+- Education.
+- Projects.
+- Certificates.
+- Social links.
+- Skill categories.
+- Individual skills.
+- Avatar, resume, project covers, skill icons, and certificate files.
+
+### Public API
+
+Public endpoints under `/api/portfolios/**` expose published portfolio data:
+
+- Paginated portfolio listing.
+- Portfolio detail by slug.
+- Published projects.
+- Public contact form.
+
+### Secure Uploads
+
+- Validation by size, extension, real MIME type, and magic bytes.
+- Allowed image formats: `png`, `jpg`, `jpeg`, `webp`.
+- Allowed document format: `pdf`.
+- SVG is blocked.
+- Avatars, covers, and icons can be public.
+- Resumes and certificates are private by default.
+- File metadata is persisted in the database.
+- Google Drive uploads can be public or private depending on file type.
+
+### Docker Production Setup
+
+- `docker-compose.yml` for API + MySQL.
+- `prod` profile support.
+- Internal container port fixed at `8080`.
+- `.dockerignore` included to keep local noise out of builds.
+- Swagger disabled in production.
+- Actuator exposes only `health` and `info`.
+- CORS supports multiple comma-separated frontend URLs.
+
+---
+
+## Technology Stack
 
 | Category | Technology |
-|-----------|-------------|
-| **Backend** | Spring Boot 3 |
-| **Security** | Spring Security 6 (JWT) |
-| **Data** | Spring Data JPA (Hibernate) |
-| **Database** | MySQL |
-| **Migrations** | Flyway |
-| **DTO Mapping** | MapStruct |
-| **Utilities** | Lombok |
-| **Validation** | Jakarta Bean Validation |
-| **File Uploads** | Google Drive API v3 |
-| **Email** | Spring Boot Mail (SMTP) |
-| **Documentation** | SpringDoc (Swagger UI) |
+|---|---|
+| Backend | Spring Boot 4 |
+| Security | Spring Security 7 |
+| Auth | JWT, secure cookies, OAuth2 Client |
+| Data | Spring Data JPA, Hibernate |
+| Database | MySQL 8 |
+| Migrations | Flyway |
+| DTO Mapping | MapStruct |
+| Utilities | Lombok |
+| Validation | Jakarta Bean Validation |
+| Uploads | Google Drive API v3 |
+| Email | Spring Mail / SMTP |
+| Dev Documentation | SpringDoc OpenAPI |
+| Observability | Spring Boot Actuator |
+| Containers | Docker, Docker Compose |
 
 ---
 
-## 🧱 Database & Migrations
+## Database
 
-- **Schema:** `studiostkoh.portafolio` (defined in `V1__init.sql`)  
-- **Core Tables:**  
-  `app_user`, `profile`, `social_link`, `skill_category`, `skill`,  
-  `project`, `experience`, `education`, `contact_message`,  
-  `certificate`, and the join table `project_skill`.  
-- **Migrations:**  
-  Handled automatically by **Flyway**. Files are located in:  
-  `src/main/resources/db/migration`
+The main schema is managed with Flyway from:
 
----
-
-## ⚙️ Prerequisites
-
-- **Java 21 (JDK)**  
-- **Maven 3.9+**  
-- **MySQL 8.0+** server with an empty schema (e.g., `studiostkoh.portafolio`)  
-- **Google Cloud Platform (OAuth)** credentials for Google Drive API  
-- **SMTP server credentials** (e.g., Gmail App Password) for sending emails
-
----
-
-## 🔧 Configuration & Environment Variables
-
-The application expects the following environment variables  
-(or equivalent properties in `application.properties`):
-
-```bash
-# MySQL Database
-export MYSQL_HOST=localhost
-export MYSQL_PORT=3306
-export MYSQL_DATABASE=studiostkoh.portafolio
-export MYSQL_USER=your_user
-export MYSQL_PASSWORD=your_password
-
-# JWT Security
-export JWT_TOKEN=your_long_secret_key_for_jwt
-export JWT_EXPIRATION_TIME=60 # (In minutes)
-
-# Google Drive (OAuth 2.0)
-export DRIVE_OAUTH_CLIENT_ID=your_client_id
-export DRIVE_OAUTH_CLIENT_SECRET=your_client_secret
-export DRIVE_OAUTH_REFRESH_TOKEN=your_refresh_token
-
-# Google Drive (Folder IDs)
-export DRIVE_FOLDER_USER_AVATARS=id_folder_avatars
-export DRIVE_FOLDER_USER_RESUMES=id_folder_resumes
-export DRIVE_FOLDER_PROJECTS_COVER=id_folder_covers
-export DRIVE_FOLDER_SKILLS_ICON=id_folder_icons
-export DRIVE_FOLDER_CERTIFICATES=id_folder_certificates
-
-# Email (SMTP)
-export SMTP_HOST=smtp.gmail.com
-export SMTP_PORT=587
-export GMAIL_APP_EMAIL=your_email@gmail.com
-export GMAIL_APP_PASSWORD=your_google_app_password
-````
-
----
-
-## 🧠 Local Execution
-
-1. Clone the repository
-2. Set up the environment variables mentioned above
-3. Ensure your **MySQL** server is running and the schema exists
-4. Run the application:
-
-```bash
-./mvnw spring-boot:run
+```text
+src/main/resources/db/migration
 ```
 
-* API available at: [http://localhost:8080](http://localhost:8080)
-* Swagger UI: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+Core tables:
+
+```text
+app_user
+user_identity
+refresh_token
+email_verification_token
+profile
+project
+skill_category
+skill
+global_skill
+experience
+education
+certificate
+social_link
+contact_message
+stored_file
+project_skill
+```
+
+The schema supports:
+
+- Internal users and OAuth2 users.
+- Session and refresh tokens.
+- Email verification tokens.
+- Published, private, and draft portfolio states.
+- Uploaded files with metadata.
+- Project-skill relationships.
+- Indexes for public search, ownership checks, and ordering.
 
 ---
 
-## 📚 Endpoint Structure (Summary)
+## Prerequisites
 
-### 🔐 Authentication
+For local execution without Docker:
 
-| Method   | Endpoint             | Description         |
-| -------- | -------------------- | ------------------- |
-| **POST** | `/api/auth/register` | Register a new user |
-| **POST** | `/api/auth/login`    | Log in, returns JWT |
+- Java 21.
+- Maven 3.9+.
+- MySQL 8.
+- SMTP credentials.
+- Google Drive OAuth2 credentials if real uploads are enabled.
+- Google OAuth2 credentials if Google login is enabled.
 
-### 👤 Authenticated User (`/api/me/**`)
+For Docker execution:
 
-| Entity                        | Methods                                             |
-| ----------------------------- | --------------------------------------------------- |
-| **Profile**                   | `GET`, `PUT`                                        |
-| **Experience**                | `GET`, `POST`, `PUT`, `DELETE`                      |
-| **Education**                 | `GET`, `POST`, `PUT`, `DELETE`                      |
-| **Social Links**              | `GET`, `POST`, `PUT`, `DELETE`                      |
-| **Projects**                  | `GET`, `POST`, `PUT`, `DELETE`                      |
-| **Certificates**              | `GET`, `POST`, `PUT`, `DELETE`                      |
-| **Skill Categories / Skills** | `GET`, `POST /batch`, `PUT /batch`, `DELETE /batch` |
-| **Uploads**                   | `POST /api/me/upload/...` (Avatar, Resume, etc.)    |
+- Docker.
+- Docker Compose.
+- Configured `.env-prod` file.
 
-### 🌐 Public API (`/api/portfolios/**`)
+---
 
-| Method   | Endpoint                                               | Description            |
-| -------- | ------------------------------------------------------ | ---------------------- |
-| **GET**  | `/api/portfolios`                                      | List all profiles      |
-| **GET**  | `/api/portfolios/{slug}`                               | Get portfolio details  |
-| **GET**  | `/api/portfolios/{profileSlug}/projects/{projectSlug}` | Get project details    |
-| **POST** | `/api/portfolios/{slug}/contact`                       | Send a contact message |
+## Environment Variables
 
-### 🛠️ Administration
+Use `.env.example` as the base. Do not commit `.env`, `.env-dev`, or `.env-prod`.
 
-| Method   | Endpoint                                              | Description                 |
-| -------- | ----------------------------------------------------- | --------------------------- |
-| **POST** | `/api/admin/profiles/{profileId}/toggle-collaborator` | Example Admin-only endpoint |
+Main variables:
+
+```bash
+# Spring
+SPRING_PROFILES_ACTIVE=prod
+SERVER_PORT=8080
+
+# MySQL
+MYSQL_HOST=mysql-db
+MYSQL_PORT=3306
+MYSQL_DATABASE=studiostkoh.portafolio
+MYSQL_USER=your_mysql_user
+MYSQL_PASSWORD=your_mysql_password
+MYSQL_ROOT_PASSWORD=your_mysql_root_password
+MYSQL_CONNECTION_PARAMS=useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+
+# JWT
+JWT_TOKEN=your_base64_or_strong_jwt_secret
+JWT_EXPIRATION_TIME=15
+JWT_REFRESH_EXPIRATION_DAYS=30
+JWT_ISSUER=portfolio-hub-api
+JWT_AUDIENCE=portfolio-hub
+
+# Cookies
+COOKIE_SECURE=true
+COOKIE_SAME_SITE=None
+COOKIE_DOMAIN=
+
+# CORS
+CORS_ALLOWED_ORIGINS=https://frontend-one.example.com,https://frontend-two.example.com
+
+# Frontend redirects
+FRONTEND_ALLOWED_REDIRECTS=https://frontend-one.example.com,https://frontend-two.example.com
+FRONTEND_DEFAULT_REDIRECT=https://frontend-one.example.com
+
+# Email
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+GMAIL_APP_EMAIL=your_email@example.com
+GMAIL_APP_PASSWORD=your_app_password
+
+# Email verification
+EMAIL_VERIFICATION_EXPIRATION_MINUTES=1440
+EMAIL_VERIFICATION_FRONTEND_URL=https://frontend-one.example.com/verify-email
+
+# Google OAuth2 login
+GOOGLE_OAUTH_CLIENT_ID=your_google_oauth_client_id
+GOOGLE_OAUTH_CLIENT_SECRET=your_google_oauth_client_secret
+
+# Google Drive
+GOOGLE_DRIVE_ENABLED=true
+DRIVE_OAUTH_CLIENT_ID=your_drive_client_id
+DRIVE_OAUTH_CLIENT_SECRET=your_drive_client_secret
+DRIVE_OAUTH_REFRESH_TOKEN=your_drive_refresh_token
+DRIVE_FOLDER_USER_AVATARS=folder_id
+DRIVE_FOLDER_USER_RESUMES=folder_id
+DRIVE_FOLDER_PROJECTS_COVER=folder_id
+DRIVE_FOLDER_SKILLS_ICON=folder_id
+DRIVE_FOLDER_CERTIFICATES=folder_id
+
+# Upload limits
+UPLOAD_MAX_IMAGE_SIZE=2MB
+UPLOAD_MAX_DOCUMENT_SIZE=5MB
+
+# Actuator
+ACTUATOR_EXPOSE_DETAILS=never
+```
+
+Note: for local Docker with MySQL inside the same Compose network, `useSSL=false` can be used. If MySQL is moved to an external provider or remote connection, TLS is recommended.
+
+---
+
+## Local Execution
+
+```bash
+mvn spring-boot:run
+```
+
+The API will be available at:
+
+```text
+http://localhost:8080
+```
+
+Swagger UI in development mode:
+
+```text
+http://localhost:8080/swagger-ui/index.html
+```
+
+Swagger is disabled in production.
+
+---
+
+## Docker Execution
+
+Start local production:
+
+```bash
+docker compose --env-file .env-prod up --build -d
+```
+
+List containers:
+
+```bash
+docker compose --env-file .env-prod ps
+```
+
+View logs:
+
+```bash
+docker logs -f portfolio-api-container
+```
+
+Stop:
+
+```bash
+docker compose --env-file .env-prod down
+```
+
+The API will be available at:
+
+```text
+http://localhost:8080
+```
+
+Health check:
+
+```text
+http://localhost:8080/actuator/health
+```
+
+---
+
+## Main Endpoints
+
+### Authentication
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/api/auth/register` | Register a user |
+| POST | `/api/auth/login` | Email/password login |
+| POST | `/api/auth/refresh` | Rotate refresh token |
+| POST | `/api/auth/logout` | Log out current session |
+| POST | `/api/auth/logout-all` | Log out all sessions |
+| POST | `/api/auth/verify-email` | Verify email address |
+| POST | `/api/auth/resend-verification` | Resend verification email |
+| GET | `/oauth2/authorization/google` | Google login |
+
+### Authenticated User
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/me` | Get authenticated profile |
+| PUT | `/api/me` | Update profile |
+| GET | `/api/me/verification-status` | Check email verification status |
+| GET | `/api/me/files/{storedFileId}` | Download private file |
+| POST | `/api/me/upload/avatar` | Upload avatar |
+| POST | `/api/me/upload/resume` | Upload resume |
+| POST | `/api/me/upload/projects/{id}/cover` | Upload project cover |
+| POST | `/api/me/upload/skills/{id}/icon` | Upload skill icon |
+| POST | `/api/me/upload/certificates/{id}` | Upload certificate file |
+
+### Private Portfolio Management
+
+| Resource | Base path |
+|---|---|
+| Experience | `/api/me/experiences` |
+| Education | `/api/me/educations` |
+| Projects | `/api/me/projects` |
+| Certificates | `/api/me/certificates` |
+| Social links | `/api/me/social-links` |
+| Skill categories and skills | `/api/me/skills` |
+
+### Public API
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/portfolios` | Paginated list of published portfolios |
+| GET | `/api/portfolios/{slug}` | Public portfolio detail |
+| GET | `/api/portfolios/{profileSlug}/projects` | Published projects |
+| GET | `/api/portfolios/{profileSlug}/projects/{projectSlug}` | Project detail |
+| POST | `/api/portfolios/{slug}/contact` | Send contact message |
+
+### Actuator
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/actuator/health` | Health status |
+| GET | `/actuator/info` | Basic application info |
+
+---
+
+## Production Security
+
+In the `prod` profile:
+
+- Swagger/OpenAPI is disabled.
+- CORS requires explicit origins.
+- Cookies should use `Secure=true` when exposed through HTTPS.
+- Internal errors are not returned to clients.
+- Actuator exposes only `health` and `info`.
+- The backend is prepared to work behind an HTTPS proxy through forwarded headers.
+
+---
+
+## Testing
+
+Run tests:
+
+```bash
+mvn test
+```
+
+Run full verification:
+
+```bash
+mvn verify
+```
+
+Test coverage includes:
+
+- Spring context with the test profile.
+- CORS.
+- Authentication cookies.
+- Rate limiting.
+- No-op Google Drive service.
+- Email verification.
+- Secure file validation.
+
+---
+
+## Project Status
+
+Portfolio Hub API is designed as the main backend for a professional portfolio platform. It currently supports modern authentication, private portfolio administration, public publishing, secure uploads, email verification, and local production execution with Docker.
 
 ---
 
 <p align="center">
-  <sub>🛠️ Built with 💙 by <strong>Studios TKOH</strong></sub><br>
+  <sub>Built with passion by <strong>Juan S Pimentel Lalangui</strong></sub><br>
 </p>
