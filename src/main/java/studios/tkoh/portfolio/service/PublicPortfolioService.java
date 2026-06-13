@@ -12,7 +12,7 @@ import studios.tkoh.portfolio.dto.publicapi.PortfolioPublicDto;
  */
 public interface PublicPortfolioService {
 
-    Page<PortfolioPublicDto> getAllPublicProfiles(Pageable pageable);
+    Page<PortfolioPublicDto> getAllPublicProfiles(String search, Pageable pageable);
 
     PortfolioDetailDto getFullPortfolioBySlug(String slug);
 
