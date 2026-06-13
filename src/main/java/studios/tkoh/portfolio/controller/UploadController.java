@@ -84,4 +84,5 @@ public class UploadController {
             return new ResponseEntity<>(ApiResponse.error("UPLOAD_ERROR", "Error al subir archivo", "/api/me/upload/certificate/" + certificateId + "/file", null), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 }
