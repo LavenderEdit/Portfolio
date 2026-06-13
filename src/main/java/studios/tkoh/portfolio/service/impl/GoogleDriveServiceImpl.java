@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +28,7 @@ import studios.tkoh.portfolio.service.GoogleDriveService;
  * @author Studios TKOH!
  */
 @Service
+@ConditionalOnProperty(prefix = "google.drive", name = "enabled", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
 public class GoogleDriveServiceImpl implements GoogleDriveService {
 
