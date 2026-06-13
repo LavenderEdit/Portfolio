@@ -19,7 +19,18 @@ public class NoopGoogleDriveServiceImpl implements GoogleDriveService {
     }
 
     @Override
+    public UploadResponse uploadFile(MultipartFile multipartFile, String folderId, String uniqueFilename, boolean publiclyReadable)
+            throws IOException, GeneralSecurityException {
+        throw new IllegalStateException("Google Drive integration is disabled.");
+    }
+
+    @Override
     public String getPublicViewUrl(String fileId) {
+        throw new IllegalStateException("Google Drive integration is disabled.");
+    }
+
+    @Override
+    public byte[] downloadFile(String fileId) throws IOException, GeneralSecurityException {
         throw new IllegalStateException("Google Drive integration is disabled.");
     }
 }
