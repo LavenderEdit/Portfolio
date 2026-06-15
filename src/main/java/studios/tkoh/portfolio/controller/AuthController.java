@@ -110,13 +110,13 @@ public class AuthController {
     }
 
     private void addAuthCookies(HttpServletResponse response, AuthResponse authResponse) {
-        response.addCookie(authCookieService.createAccessTokenCookie(authResponse.token(), jwtService.getAccessTokenMaxAgeSeconds()));
-        response.addCookie(authCookieService.createRefreshTokenCookie(authResponse.refreshToken(), refreshMaxAgeSeconds()));
+        authCookieService.addAccessTokenCookie(response, authResponse.token(), jwtService.getAccessTokenMaxAgeSeconds());
+        authCookieService.addRefreshTokenCookie(response, authResponse.refreshToken(), refreshMaxAgeSeconds());
     }
 
     private void clearAuthCookies(HttpServletResponse response) {
-        response.addCookie(authCookieService.clearAccessTokenCookie());
-        response.addCookie(authCookieService.clearRefreshTokenCookie());
+        authCookieService.clearAccessTokenCookie(response);
+        authCookieService.clearRefreshTokenCookie(response);
     }
 
     private int refreshMaxAgeSeconds() {
