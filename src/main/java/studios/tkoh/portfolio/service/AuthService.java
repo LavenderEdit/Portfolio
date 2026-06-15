@@ -20,4 +20,6 @@ public interface AuthService {
     void logout(String refreshToken);
 
     void logoutAll(String email);
+
+    void setPassword(String email, String newPassword);
 }
