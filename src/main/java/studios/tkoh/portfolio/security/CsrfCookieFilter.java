@@ -24,6 +24,9 @@ public class CsrfCookieFilter extends OncePerRequestFilter {
         // Forzamos a Spring a resolver el token y enviar la cookie al cliente
         if (csrfToken != null) {
             csrfToken.getToken();
+            
+            // Agregamos el token a una cabecera que Axios sí puede leer en cross-domain
+            response.setHeader("X-CSRF-TOKEN-VALUE", csrfToken.getToken());
         }
         
         filterChain.doFilter(request, response);
