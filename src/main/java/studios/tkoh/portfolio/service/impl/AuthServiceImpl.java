@@ -96,6 +96,16 @@ public class AuthServiceImpl implements AuthService {
         authSessionService.logoutAll(email);
     }
 
+    @Override
+    @Transactional
+    public void setPassword(String email, String newPassword) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalStateException("Usuario no encontrado con el correo: " + email));
+        
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
     private String generateUniqueSlug(String baseSlug) {
         String slug = baseSlug.isBlank() ? "portfolio" : baseSlug;
         int counter = 1;
