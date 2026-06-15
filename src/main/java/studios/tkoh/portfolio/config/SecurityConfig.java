@@ -148,6 +148,7 @@ public class SecurityConfig {
                 "Cache-Control",
                 "ngrok-skip-browser-warning"
         ));
+        configuration.setExposedHeaders(List.of("X-CSRF-TOKEN-VALUE"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
