@@ -1,7 +1,9 @@
 package studios.tkoh.portfolio.security;
 
-import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,32 +26,34 @@ public class AuthCookieService {
         this.sameSite = sameSite == null || sameSite.isBlank() ? "Lax" : sameSite.trim();
     }
 
-    public Cookie createAccessTokenCookie(String value, int maxAgeSeconds) {
-        return createCookie(ACCESS_TOKEN_COOKIE, value, maxAgeSeconds);
+    public void addAccessTokenCookie(HttpServletResponse response, String value, int maxAgeSeconds) {
+        addCookie(response, ACCESS_TOKEN_COOKIE, value, maxAgeSeconds);
     }
 
-    public Cookie createRefreshTokenCookie(String value, int maxAgeSeconds) {
-        return createCookie(REFRESH_TOKEN_COOKIE, value, maxAgeSeconds);
+    public void addRefreshTokenCookie(HttpServletResponse response, String value, int maxAgeSeconds) {
+        addCookie(response, REFRESH_TOKEN_COOKIE, value, maxAgeSeconds);
     }
 
-    public Cookie clearAccessTokenCookie() {
-        return createCookie(ACCESS_TOKEN_COOKIE, "", 0);
+    public void clearAccessTokenCookie(HttpServletResponse response) {
+        addCookie(response, ACCESS_TOKEN_COOKIE, "", 0);
     }
 
-    public Cookie clearRefreshTokenCookie() {
-        return createCookie(REFRESH_TOKEN_COOKIE, "", 0);
+    public void clearRefreshTokenCookie(HttpServletResponse response) {
+        addCookie(response, REFRESH_TOKEN_COOKIE, "", 0);
     }
 
-    private Cookie createCookie(String name, String value, int maxAgeSeconds) {
-        Cookie cookie = new Cookie(name, value);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(secure);
-        cookie.setPath("/");
-        cookie.setMaxAge(maxAgeSeconds);
+    private void addCookie(HttpServletResponse response, String name, String value, int maxAgeSeconds) {
+        ResponseCookie.ResponseCookieBuilder cookieBuilder = ResponseCookie.from(name, value)
+                .httpOnly(true)
+                .secure(secure)
+                .path("/")
+                .maxAge(maxAgeSeconds)
+                .sameSite(sameSite);
+
         if (!domain.isBlank()) {
-            cookie.setDomain(domain);
+            cookieBuilder.domain(domain);
         }
-        cookie.setAttribute("SameSite", sameSite);
-        return cookie;
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookieBuilder.build().toString());
     }
 }
