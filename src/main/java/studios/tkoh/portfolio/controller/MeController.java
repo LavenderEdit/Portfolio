@@ -17,6 +17,8 @@ import studios.tkoh.portfolio.dto.response.ApiResponse;
 import studios.tkoh.portfolio.security.CustomUserDetails;
 import studios.tkoh.portfolio.service.EmailVerificationService;
 import studios.tkoh.portfolio.service.ProfileService;
+import studios.tkoh.portfolio.service.AuthService;
+import studios.tkoh.portfolio.dto.auth.SetPasswordRequest;
 
 /**
  *
@@ -29,6 +31,7 @@ public class MeController {
 
     private final ProfileService profileService;
     private final EmailVerificationService emailVerificationService;
+    private final AuthService authService;
 
     @GetMapping("/profile")
     public ResponseEntity<ApiResponse<ProfileDto>> getMyProfile(Authentication authentication) {
@@ -70,5 +73,14 @@ public class MeController {
     public ResponseEntity<ApiResponse<VerificationStatusResponse>> verificationStatus(Authentication authentication) {
         VerificationStatusResponse status = emailVerificationService.status(authentication.getName());
         return ResponseEntity.ok(ApiResponse.ok("Estado de verificacion obtenido", status));
+    }
+
+    @PutMapping("/settings/password")
+    public ResponseEntity<ApiResponse<Void>> setPassword(
+            Authentication authentication,
+            @Valid @RequestBody SetPasswordRequest request) {
+        
+        authService.setPassword(authentication.getName(), request.newPassword());
+        return ResponseEntity.ok(ApiResponse.ok("Contraseña establecida exitosamente"));
     }
 }
