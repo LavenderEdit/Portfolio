@@ -24,6 +24,7 @@ import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWrite
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.security.web.csrf.XorCsrfTokenRequestAttributeHandler;
 import studios.tkoh.portfolio.security.CsrfCookieFilter;
 import studios.tkoh.portfolio.security.RateLimitFilter;
 import studios.tkoh.portfolio.security.RequestIdFilter;
@@ -68,14 +69,17 @@ public class SecurityConfig {
             cookie.secure(cookieSecure);
         });
 
+        XorCsrfTokenRequestAttributeHandler requestHandler = new XorCsrfTokenRequestAttributeHandler();
+        requestHandler.setCsrfRequestAttributeName(null);
+
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf
                 .csrfTokenRepository(tokenRepository)
+                .csrfTokenRequestHandler(requestHandler)
                 .ignoringRequestMatchers(
                         "/api/auth/register",
                         "/api/auth/login",
-                        "/api/auth/refresh",
                         "/api/auth/logout",
                         "/api/auth/logout-all",
                         "/oauth2/**"
