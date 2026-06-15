@@ -52,6 +52,12 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         AuthResponse authResponse = authSessionService.createSession(user.getEmail(), request);
         response.addCookie(authCookieService.createAccessTokenCookie(authResponse.token(), jwtService.getAccessTokenMaxAgeSeconds()));
         response.addCookie(authCookieService.createRefreshTokenCookie(authResponse.refreshToken(), refreshMaxAgeSeconds()));
+
+        org.springframework.security.web.csrf.CsrfToken csrfToken = (org.springframework.security.web.csrf.CsrfToken) request.getAttribute(org.springframework.security.web.csrf.CsrfToken.class.getName());
+        if (csrfToken != null) {
+            csrfToken.getToken(); 
+        }
+
         getRedirectStrategy().sendRedirect(request, response, safeRedirect(defaultRedirect));
     }
 
