@@ -18,11 +18,13 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import studios.tkoh.portfolio.security.CsrfCookieFilter;
 import studios.tkoh.portfolio.security.RateLimitFilter;
 import studios.tkoh.portfolio.security.RequestIdFilter;
 import studios.tkoh.portfolio.security.OAuth2AuthenticationFailureHandler;
@@ -52,12 +54,24 @@ public class SecurityConfig {
     @Value("${application.security.cors.allowed-origins}")
     private String allowedOrigins;
 
+    @Value("${application.security.cookie.same-site:Lax}")
+    private String cookieSameSite;
+
+    @Value("${application.security.cookie.secure:false}")
+    private boolean cookieSecure;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        CookieCsrfTokenRepository tokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
+        tokenRepository.setCookieCustomizer(cookie -> {
+            cookie.sameSite(cookieSameSite);
+            cookie.secure(cookieSecure);
+        });
+
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .csrfTokenRepository(tokenRepository)
                 .ignoringRequestMatchers(
                         "/api/auth/register",
                         "/api/auth/login",
@@ -101,7 +115,8 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(requestIdFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class);
 
         return http.build();
     }
