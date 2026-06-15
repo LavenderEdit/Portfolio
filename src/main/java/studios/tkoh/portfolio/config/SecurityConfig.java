@@ -19,7 +19,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import studios.tkoh.portfolio.security.CustomCookieCsrfTokenRepository;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -55,6 +55,9 @@ public class SecurityConfig {
     @Value("${application.security.cors.allowed-origins}")
     private String allowedOrigins;
 
+    @Value("${application.security.cookie.domain:}")
+    private String cookieDomain;
+
     @Value("${application.security.cookie.same-site:Lax}")
     private String cookieSameSite;
 
@@ -63,11 +66,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        CookieCsrfTokenRepository tokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
-        tokenRepository.setCookieCustomizer(cookie -> {
-            cookie.sameSite(cookieSameSite);
-            cookie.secure(cookieSecure);
-        });
+        CustomCookieCsrfTokenRepository tokenRepository = new CustomCookieCsrfTokenRepository(cookieDomain, cookieSecure, cookieSameSite);
 
         XorCsrfTokenRequestAttributeHandler requestHandler = new XorCsrfTokenRequestAttributeHandler();
         requestHandler.setCsrfRequestAttributeName(null);
