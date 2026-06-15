@@ -2,37 +2,43 @@ package studios.tkoh.portfolio.security;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 class AuthCookieServiceTest {
 
     @Test
     void createsHttpOnlySecureAccessCookieWithConfiguredSameSite() {
         AuthCookieService service = new AuthCookieService("api.local", true, "Strict");
+        MockHttpServletResponse response = new MockHttpServletResponse();
 
-        Cookie cookie = service.createAccessTokenCookie("access-token", 900);
+        service.addAccessTokenCookie(response, "access-token", 900);
 
-        assertThat(cookie.getName()).isEqualTo(AuthCookieService.ACCESS_TOKEN_COOKIE);
-        assertThat(cookie.getValue()).isEqualTo("access-token");
-        assertThat(cookie.isHttpOnly()).isTrue();
-        assertThat(cookie.getSecure()).isTrue();
-        assertThat(cookie.getDomain()).isEqualTo("api.local");
-        assertThat(cookie.getPath()).isEqualTo("/");
-        assertThat(cookie.getMaxAge()).isEqualTo(900);
-        assertThat(cookie.getAttribute("SameSite")).isEqualTo("Strict");
+        String setCookieHeader = response.getHeader(HttpHeaders.SET_COOKIE);
+        assertThat(setCookieHeader).isNotNull();
+        assertThat(setCookieHeader).contains(AuthCookieService.ACCESS_TOKEN_COOKIE + "=access-token");
+        assertThat(setCookieHeader).contains("HttpOnly");
+        assertThat(setCookieHeader).contains("Secure");
+        assertThat(setCookieHeader).contains("Domain=api.local");
+        assertThat(setCookieHeader).contains("Path=/");
+        assertThat(setCookieHeader).contains("Max-Age=900");
+        assertThat(setCookieHeader).contains("SameSite=Strict");
     }
 
     @Test
     void createsClearingCookieForLogout() {
         AuthCookieService service = new AuthCookieService("", false, "Lax");
+        MockHttpServletResponse response = new MockHttpServletResponse();
 
-        Cookie cookie = service.clearAccessTokenCookie();
+        service.clearAccessTokenCookie(response);
 
-        assertThat(cookie.getName()).isEqualTo(AuthCookieService.ACCESS_TOKEN_COOKIE);
-        assertThat(cookie.getValue()).isEmpty();
-        assertThat(cookie.getMaxAge()).isZero();
-        assertThat(cookie.isHttpOnly()).isTrue();
-        assertThat(cookie.getPath()).isEqualTo("/");
+        String setCookieHeader = response.getHeader(HttpHeaders.SET_COOKIE);
+        assertThat(setCookieHeader).isNotNull();
+        assertThat(setCookieHeader).contains(AuthCookieService.ACCESS_TOKEN_COOKIE + "=");
+        assertThat(setCookieHeader).contains("Max-Age=0");
+        assertThat(setCookieHeader).contains("HttpOnly");
+        assertThat(setCookieHeader).contains("Path=/");
+        assertThat(setCookieHeader).doesNotContain("Secure");
     }
 }
