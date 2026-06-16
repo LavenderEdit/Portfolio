@@ -24,7 +24,7 @@ import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWrite
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.security.web.csrf.XorCsrfTokenRequestAttributeHandler;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import studios.tkoh.portfolio.security.CsrfCookieFilter;
 import studios.tkoh.portfolio.security.RateLimitFilter;
 import studios.tkoh.portfolio.security.RequestIdFilter;
@@ -68,7 +68,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         CustomCookieCsrfTokenRepository tokenRepository = new CustomCookieCsrfTokenRepository(cookieDomain, cookieSecure, cookieSameSite);
 
-        XorCsrfTokenRequestAttributeHandler requestHandler = new XorCsrfTokenRequestAttributeHandler();
+        CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
         requestHandler.setCsrfRequestAttributeName(null);
 
         http
