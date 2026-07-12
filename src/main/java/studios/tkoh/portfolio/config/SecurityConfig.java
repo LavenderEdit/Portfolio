@@ -81,6 +81,9 @@ public class SecurityConfig {
                         "/api/auth/login",
                         "/api/auth/logout",
                         "/api/auth/logout-all",
+                        "/api/auth/resend-verification",
+                        "/api/auth/verify-email",
+                        "/api/auth/refresh",
                         "/oauth2/**"
                 ))
                 .headers(headers -> headers
